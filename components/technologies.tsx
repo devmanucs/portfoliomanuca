@@ -60,8 +60,8 @@ export function Technologies() {
 
   return (
     <section
-      id="tecnologias"
-      className="relative border-t border-border px-6 py-28 text-left"
+      id="stacks"
+      className="relative px-6 py-20 text-left md:py-24"
       ref={sectionRef}
     >
       <div className="mx-auto max-w-6xl">

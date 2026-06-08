@@ -30,12 +30,12 @@ export const FloatingNav = ({
     >
       {leftSlot ? <div className="shrink-0">{leftSlot}</div> : <div className="w-9" />}
 
-      <div className="flex flex-1 items-center justify-center gap-1 sm:gap-2 md:gap-6">
-        {navItems.map((navItem, idx) => (
+      <div className="flex flex-1 items-center justify-center gap-0.5 sm:gap-1 md:gap-3 lg:gap-4">
+        {navItems.map((navItem) => (
           <a
-            key={`nav-${idx}`}
+            key={navItem.link}
             href={navItem.link}
-            className="flex items-center gap-2 rounded-full px-2 py-2 text-muted-foreground transition-colors hover:bg-sage/10 hover:text-foreground sm:px-3"
+            className="flex items-center gap-1.5 rounded-full px-2.5 py-2 text-muted-foreground transition-colors hover:bg-sage/10 hover:text-foreground sm:px-3"
           >
             <span className="flex h-5 w-5 items-center justify-center md:hidden">
               {navItem.icon}

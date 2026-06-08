@@ -52,7 +52,7 @@ export function Extras() {
   return (
     <section
       id="extras"
-      className="relative border-t border-border bg-card/30 px-6 py-28 text-left"
+      className="relative bg-card/30 px-6 py-20 text-left md:py-24"
       ref={sectionRef}
     >
       <div className="mx-auto max-w-6xl">

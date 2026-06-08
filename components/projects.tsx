@@ -29,12 +29,12 @@ export function Projects() {
   return (
     <section
       id="projetos"
-      className="relative px-6 py-28 text-left"
+      className="relative px-6 py-20 text-left md:py-24"
       ref={sectionRef}
     >
       <div className="mx-auto max-w-6xl">
         <div
-          className={`mb-12 text-left transition-all duration-500 md:mb-14 ${
+          className={`mb-10 text-left transition-all duration-500 md:mb-12 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
         >

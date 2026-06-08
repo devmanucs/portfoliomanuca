@@ -4,9 +4,11 @@ import { ArrowUp, Github, Linkedin, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navLinks = [
+  { href: "#inicio", label: "início" },
   { href: "#sobre", label: "sobre" },
-  { href: "#tecnologias", label: "tecnologias" },
+  { href: "#stacks", label: "stacks" },
   { href: "#projetos", label: "projetos" },
+  { href: "#contato", label: "contato" },
 ];
 
 const whatsappLink =
@@ -24,10 +26,8 @@ export function Footer() {
   return (
     <footer
       id="contato"
-      className="relative border-t border-border bg-background px-6 py-28 text-left"
+      className="relative bg-background px-6 py-20 text-left md:py-24"
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-sage/30 to-transparent" />
-
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         className={`fixed bottom-6 right-6 z-40 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-all hover:border-sage/40 hover:text-sage ${
@@ -72,7 +72,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+        <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -102,7 +102,7 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="mt-14 border-t border-border pt-8">
+        <div className="mt-12 border-t border-border pt-6">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Manuella Carvalho
           </p>

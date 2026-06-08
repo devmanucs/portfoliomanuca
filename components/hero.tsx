@@ -6,12 +6,15 @@ import { motion } from "motion/react";
 
 export function Hero() {
   return (
-    <AuroraBackground className="min-h-screen bg-background text-foreground">
+    <AuroraBackground
+      id="inicio"
+      className="min-h-screen bg-background text-foreground"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 mx-auto flex min-h-screen w-full max-w-2xl flex-col justify-center px-6 pb-16 pt-28"
+        className="relative z-10 mx-auto flex min-h-screen w-full max-w-2xl flex-col justify-center px-6 pb-20 pt-32"
       >
         <h1 className="text-4xl font-medium tracking-tight text-foreground md:text-5xl">
           Manuella Carvalho

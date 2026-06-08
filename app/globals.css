@@ -324,6 +324,7 @@
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6.5rem;
 }
 
 /* Custom scrollbar */

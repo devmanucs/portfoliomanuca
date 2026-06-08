@@ -25,7 +25,7 @@ export function PortfolioFloatingNav() {
   const navItems = [
     {
       name: "início",
-      link: "#",
+      link: "#inicio",
       icon: <Home className="h-5 w-5" />,
     },
     {
@@ -35,7 +35,7 @@ export function PortfolioFloatingNav() {
     },
     {
       name: "stacks",
-      link: "#tecnologias",
+      link: "#stacks",
       icon: <Code2 className="h-5 w-5" />,
     },
     {
@@ -57,9 +57,9 @@ export function PortfolioFloatingNav() {
         navItems={navItems}
         leftSlot={
           <a
-            href="#"
+            href="#inicio"
             className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-sage/10"
-            aria-label="inicio"
+            aria-label="início"
           >
             {mounted ? (
               <Image
