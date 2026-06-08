@@ -1,22 +1,20 @@
-import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Technologies } from "@/components/technologies"
 import { Projects } from "@/components/projects"
 import { Extras } from "@/components/extras"
-import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
+import { PortfolioFloatingNav } from "@/components/portfolio-floating-nav"
 
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <Header />
+      <PortfolioFloatingNav />
       <Hero />
       <About />
       <Technologies />
       <Projects />
       <Extras />
-      <Contact />
       <Footer />
     </main>
   )
