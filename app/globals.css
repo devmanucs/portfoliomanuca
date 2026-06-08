@@ -83,6 +83,7 @@
 }
 
 @theme inline {
+  --animate-aurora: aurora 60s linear infinite;
   --font-sans: "DM Sans", "DM Sans Fallback";
   --font-serif: "Fraunces", "Fraunces Fallback";
   --font-mono: "Geist Mono", "Geist Mono Fallback";
@@ -134,6 +135,19 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes aurora {
+  from {
+    background-position:
+      50% 50%,
+      50% 50%;
+  }
+  to {
+    background-position:
+      350% 50%,
+      350% 50%;
   }
 }
 

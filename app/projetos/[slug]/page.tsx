@@ -5,7 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getProjectBySlug } from "@/lib/projects-data";
+import { focusLabels, getProjectBySlug } from "@/lib/projects-data";
 import { ArrowLeft, ArrowUpRight, Figma, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,21 @@ import { notFound } from "next/navigation";
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+function CaseSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-3xl border border-border bg-card p-6 md:p-8">
+      <h2 className="font-serif text-2xl text-foreground mb-4">{title}</h2>
+      {children}
+    </section>
+  );
+}
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
@@ -75,18 +90,97 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
 
         <header>
-          <p className="text-sm uppercase tracking-widest text-sage mb-3">
-            {project.category}
-          </p>
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
+            <p className="text-sm uppercase tracking-widest text-sage">
+              {project.category}
+            </p>
+            <span className="px-3 py-1 text-xs rounded-full bg-terracotta/10 text-terracotta border border-terracotta/20">
+              {focusLabels[project.focus]}
+            </span>
+          </div>
           <h1 className="font-serif text-4xl md:text-5xl tracking-tight text-foreground mb-4">
             {project.title}
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
-            {project.detailedDescription}
+            {project.description}
           </p>
         </header>
 
+        <CaseSection title="Contexto">
+          <p className="text-muted-foreground leading-relaxed">
+            {project.context}
+          </p>
+        </CaseSection>
+
+        <CaseSection title="Problema">
+          <p className="text-muted-foreground leading-relaxed">
+            {project.problem}
+          </p>
+        </CaseSection>
+
+        <CaseSection title="Processo">
+          <ul className="space-y-3">
+            {project.process.map((step) => (
+              <li
+                key={step}
+                className="flex gap-3 text-muted-foreground leading-relaxed"
+              >
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sage" />
+                {step}
+              </li>
+            ))}
+          </ul>
+        </CaseSection>
+
+        <section className="rounded-3xl border border-sage/30 bg-sage/5 p-6 md:p-8">
+          <h2 className="font-serif text-2xl text-foreground mb-4">
+            Resultado
+          </h2>
+          <p className="text-foreground leading-relaxed">{project.result}</p>
+        </section>
+
+        <CaseSection title="Meu papel">
+          <p className="text-muted-foreground leading-relaxed">
+            {project.myRole}
+          </p>
+        </CaseSection>
+
+        {project.designDecisions ? (
+          <CaseSection title="Decisões de design">
+            <ul className="space-y-3">
+              {project.designDecisions.map((decision) => (
+                <li
+                  key={decision}
+                  className="flex gap-3 text-muted-foreground leading-relaxed"
+                >
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-terracotta" />
+                  {decision}
+                </li>
+              ))}
+            </ul>
+          </CaseSection>
+        ) : null}
+
+        {project.technicalHighlights ? (
+          <CaseSection title="Destaques técnicos">
+            <ul className="space-y-3">
+              {project.technicalHighlights.map((highlight) => (
+                <li
+                  key={highlight}
+                  className="flex gap-3 text-muted-foreground leading-relaxed"
+                >
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber" />
+                  {highlight}
+                </li>
+              ))}
+            </ul>
+          </CaseSection>
+        ) : null}
+
         <section className="rounded-3xl border border-border bg-card p-6 md:p-8">
+          <h2 className="font-serif text-2xl text-foreground mb-6">
+            Galeria
+          </h2>
           <Carousel opts={{ loop: true }} className="w-full">
             <CarouselContent>
               {project.images.map((image, index) => (
@@ -111,7 +205,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <section className="rounded-3xl border border-border bg-card p-6 md:p-8">
           <h2 className="font-serif text-2xl text-foreground mb-4">
-            Resumo do projeto
+            Stacks
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-6">
             {project.description}

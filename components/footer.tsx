@@ -1,119 +1,110 @@
 "use client";
 
 import { ArrowUp, Github, Linkedin, Mail } from "lucide-react";
-import { useTheme } from "next-themes";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const navLinks = [
-  { href: "#sobre", label: "Sobre" },
-  { href: "#tecnologias", label: "Tecnologias" },
-  { href: "#projetos", label: "Projetos" },
-  { href: "#contato", label: "Contato" },
+  { href: "#sobre", label: "sobre" },
+  { href: "#tecnologias", label: "tecnologias" },
+  { href: "#projetos", label: "projetos" },
 ];
+
+const whatsappLink =
+  "https://wa.me/5599985110790?text=Oi%2C%20vim%20pelo%20seu%20portf%C3%B3lio%20e%20queria%20conversar!";
 
 export function Footer() {
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 500);
-    };
+    const handleScroll = () => setShowScrollTop(window.scrollY > 500);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <footer className="py-16 px-6 border-t border-border bg-card relative">
+    <footer
+      id="contato"
+      className="relative border-t border-border bg-background px-6 py-28 text-left"
+    >
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-sage/30 to-transparent" />
+
       <button
-        onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 p-3 rounded-full bg-sage text-background shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 z-40 ${
-          showScrollTop
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`fixed bottom-6 right-6 z-40 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-all hover:border-sage/40 hover:text-sage ${
+          showScrollTop ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         aria-label="Voltar ao topo"
       >
-        <ArrowUp size={20} />
+        <ArrowUp size={16} />
       </button>
 
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          <a
-            href="#"
-            className="font-serif text-2xl tracking-tight text-foreground hover:text-sage transition-colors duration-300"
-          >
-            {mounted && (
-              <Image
-                src={
-                  theme === "dark"
-                    ? "/logo-primary-dark.svg"
-                    : "/logo-primary-light.svg"
-                }
-                alt="Logo"
-                width={30}
-                height={30}
-              />
-            )}
-          </a>
+      <div className="mx-auto max-w-6xl">
+        <div className="max-w-lg">
+          <p className="mb-3 text-xs uppercase tracking-widest text-sage">
+            contato
+          </p>
+          <h2 className="mb-4 text-3xl font-medium tracking-tight text-foreground md:text-4xl">
+            fale comigo
+          </h2>
+          <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
+            aberta a projetos, colaborações e oportunidades.
+          </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="hover:text-foreground transition-colors duration-300 relative animate-line"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-4">
-            <a
-              href="https://github.com/devmanucs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full text-muted-foreground hover:text-foreground hover:bg-sage/10 transition-all duration-300"
-              aria-label="GitHub"
-            >
-              <Github size={20} />
-            </a>
-            <a
-              href="https://linkedin.com/in/manuella-carvalho-7663352b0"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full text-muted-foreground hover:text-foreground hover:bg-sage/10 transition-all duration-300"
-              aria-label="LinkedIn"
-            >
-              <Linkedin size={20} />
-            </a>
+          <div className="space-y-4 text-sm">
             <a
               href="mailto:manuhcsantos@gmail.com"
-              className="p-3 rounded-full text-muted-foreground hover:text-foreground hover:bg-sage/10 transition-all duration-300"
-              aria-label="Email"
+              className="flex items-center gap-3 text-foreground transition-colors hover:text-sage"
             >
-              <Mail size={20} />
+              <Mail size={16} className="text-sage" />
+              manuhcsantos@gmail.com
             </a>
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-foreground underline-offset-4 transition-colors hover:text-sage hover:underline"
+            >
+              WhatsApp
+            </a>
+            <p className="text-muted-foreground">
+              Imperatriz — MA / Açailândia — MA
+            </p>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-            Desenvolvido com Next.js, Tailwind CSS e shadcn/ui
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            © {new Date().getFullYear()} Todos os direitos reservados.
+        <div className="mt-14 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="transition-colors hover:text-sage"
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="https://github.com/devmanucs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-sage"
+            aria-label="GitHub"
+          >
+            <Github size={16} />
+          </a>
+          <a
+            href="https://linkedin.com/in/manuella-carvalho-7663352b0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-sage"
+            aria-label="LinkedIn"
+          >
+            <Linkedin size={16} />
+          </a>
+        </div>
+
+        <div className="mt-14 border-t border-border pt-8">
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Manuella Carvalho
           </p>
         </div>
       </div>
