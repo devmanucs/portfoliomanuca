@@ -1,0 +1,16 @@
+---
+globs: "fbi_front/src/**/*.ts,fbi_front/src/**/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript
+
+- Nao introduza `any` em codigo novo ou alterado. Prefira generics, `unknown` com narrowing, `Record<string, unknown>`, ou tipos derivados de Zod.
+- Interfaces de entidades seguem o padrao existente com prefixo `I` (`IClient`, `IPessoa`, `IRepresentante`) nos contratos de dominio. Veja @fbi_front/src/domains/clientes/types.ts e @fbi_front/src/types/pessoas/types.ts.
+- Tipos de formulario e payload devem ser derivados dos schemas sempre que possivel: `z.input<typeof schema>` para valores do form e `z.output<typeof schema>` para payload transformado. Veja @fbi_front/src/features/representantes/schemas/representantes.ts.
+- Use `type` para unions, aliases e shapes derivados; use `interface` para entidades ou objetos que seguem os contratos existentes.
+- Imports somente de tipos devem usar `import type`.
+- Evite casts amplos. Se precisar converter resposta externa, crie type guard local pequeno, como `isRecord`/`isPessoa` nos formularios de cadastro.
+- Para generics de React Hook Form, passe o tipo do form explicitamente em `useForm<T>()`, `FormFields.Input<T>` e componentes compartilhados.
+- Nao altere nomes de campos de payload por inferencia. Confirme nos tipos de dominio, schemas e transform helpers antes de renomear.
+- Quando tocar contratos compartilhados em `src/types`, `src/domains`, `src/hooks/use-crud.ts` ou schemas usados por multiplas features, rode `npx tsc --noEmit --pretty false`.

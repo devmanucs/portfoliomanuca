@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+
+# Frontend base
+
+- O frontend principal deste workspace fica em `fbi_front/`; antes de alterar padroes, leia exemplos reais desse app.
+- Use TypeScript em todo arquivo novo ou alterado. Nao use `any`; se a tipagem nao estiver clara, use `unknown`, refine com type guards, ou deixe um comentario curto pedindo validacao.
+- Use Tailwind CSS e componentes existentes. Nao crie arquivos `.css` novos; o unico CSS global do app e o tema existente em @fbi_front/src/themes/globals.css.
+- Nao crie dependencias, bibliotecas ou abstracoes novas sem necessidade explicita.
+- Para dados remotos em features, use React Query via @fbi_front/src/hooks/use-crud.ts. Nao chame `fetch`, `axios` ou `api` direto fora dos helpers centrais.
+- Preserve a arquitetura por feature: rotas em `src/app` devem delegar para `src/features`, como @fbi_front/src/app/(root)/cadastros/clientes/page.tsx e @fbi_front/src/features/clientes/feature.tsx.
+- Prefira ajustes pequenos e consistentes com os arquivos vizinhos. Se uma feature ja tem `components`, `schemas`, `utils` ou `hooks`, siga essa organizacao.
+- Use imports com alias `@/` dentro de `fbi_front`, conforme `components.json` em @fbi_front/components.json.
+- Mantenha componentes e arquivos em kebab-case. Excecao: tipos/interfaces exportados seguem o padrao existente com PascalCase e interfaces de dominio frequentemente iniciadas por `I`.
+- Ao alterar TS/TSX, valide pelo menos com `npx tsc --noEmit --pretty false` quando o escopo tocar tipos compartilhados ou contratos entre features.
+- Ao fim de cada alteracao grande, que realmente seja de grande impacto e não somente algo simples, crie um arquivo `.md` em `docs/` explicando o que foi feito para estudo posterior. Use nome em kebab-case com data quando fizer sentido, por exemplo `docs/2026-06-09-refatoracao-clientes.md`.
+- Esse doc deve registrar: objetivo da mudanca, arquivos principais alterados, decisoes tomadas, fluxo antes/depois, como validar, e pontos importantes para aprender. Nao copie codigo inteiro; referencie arquivos reais com `@fbi_front/...`.
+- A pasta `docs/` e local para estudo e deve ficar ignorada pelo Git; nao inclua esses arquivos em commits.

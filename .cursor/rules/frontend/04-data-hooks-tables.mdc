@@ -1,0 +1,17 @@
+---
+globs: "fbi_front/src/features/**/*.tsx,fbi_front/src/features/**/*.ts,fbi_front/src/hooks/**/*.ts,fbi_front/src/hooks/**/*.tsx"
+alwaysApply: false
+---
+
+# Dados, hooks globais e tabelas
+
+- Consumo de dados em features deve passar por @fbi_front/src/hooks/use-crud.ts: `useFetch`, `useCreate`, `useUpdate`, `useDelete` ou `fetchCrud`.
+- Use `config: { params: ... }` para filtros/query params. Para buscas imperativas que retornam `Promise<T[]>`, use `fetchCrud<T>()`, especialmente em combobox assyncrono.
+- Mantenha `queryKey` e `mutationKey` em constantes da feature quando ja houver `utils/constants.ts`.
+- Hooks globais em @fbi_front/src/hooks devem ser pequenos, reutilizaveis entre features e nomeados `use-nome-do-hook`. Nao mova hook para global por uso unico.
+- Hooks especificos de fluxo ou dominio ficam em `src/features/<feature>/hooks/`, como @fbi_front/src/features/pessoas/hooks/use-pessoa-endereco-contato.ts e @fbi_front/src/features/pessoas/hooks/use-pessoa-document-upload.ts.
+- Para tabelas de listagem, use @fbi_front/src/components/datatable/table.tsx. Exemplo de consumo: @fbi_front/src/features/clientes/components/table.tsx.
+- Column definitions ficam em `src/features/<feature>/components/table-columns.tsx` e usam `@tanstack/react-table`, `DataTableColumnHeader` e cells pequenas. Exemplo: @fbi_front/src/features/clientes/components/table-columns.tsx.
+- A coluna de acoes deve ficar na definicao de columns da feature e usar componentes locais de editar/excluir quando existirem.
+- Use `useMemo` para dados derivados e columns quando dependem de lookups ou filtros, como em @fbi_front/src/features/clientes/components/table.tsx.
+- Para linhas inativas ou filtros comuns de cadastro, reutilize helpers existentes de @fbi_front/src/lib/cadastro-ativo.ts e @fbi_front/src/components/shared/view-inactive-toggle.tsx.
