@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit --pretty false"
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
     "@hookform/resolvers": "^3.10.0",
     "@paper-design/shaders-react": "^0.0.77",
     "@portfoliomanuca/types": "workspace:*",

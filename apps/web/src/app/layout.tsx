@@ -5,7 +5,30 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { QueryProvider } from "@/providers/query-provider"
 import { Toaster } from "@/components/ui/sonner"
+import type { ISiteTheme } from "@portfoliomanuca/types"
 import "./globals.css"
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"
+
+async function getThemeOverrideStyle(): Promise<string> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site-theme`, { cache: "no-store" })
+    if (!res.ok) return ""
+
+    const siteTheme = (await res.json()) as ISiteTheme
+    const lightRules = Object.entries(siteTheme.tokens.light ?? {})
+      .map(([key, value]) => `${key}: ${value};`)
+      .join(" ")
+    const darkRules = Object.entries(siteTheme.tokens.dark ?? {})
+      .map(([key, value]) => `${key}: ${value};`)
+      .join(" ")
+
+    if (!lightRules && !darkRules) return ""
+    return `:root { ${lightRules} } .dark { ${darkRules} }`
+  } catch {
+    return ""
+  }
+}
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,13 +54,20 @@ export const metadata: Metadata = {
   }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const themeOverrideStyle = await getThemeOverrideStyle()
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        {themeOverrideStyle ? (
+          <style id="theme-overrides" dangerouslySetInnerHTML={{ __html: themeOverrideStyle }} />
+        ) : null}
+      </head>
       <body className={`${inter.variable} ${jetBrainsMono.variable} ${bricolage.variable}`}>
         <ThemeProvider
           attribute="class"

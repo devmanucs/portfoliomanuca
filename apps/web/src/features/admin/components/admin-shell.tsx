@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Briefcase,
@@ -9,12 +9,33 @@ import {
   FolderKanban,
   LayoutDashboard,
   LogOut,
+  Palette,
   Sparkles,
   User,
 } from "lucide-react";
 import { logout } from "@/features/admin-auth";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -23,9 +44,20 @@ const navItems = [
   { href: "/admin/skills", label: "Skills", icon: Sparkles },
   { href: "/admin/perfil", label: "Perfil", icon: User },
   { href: "/admin/curriculo", label: "Currículo", icon: FileText },
+  { href: "/admin/aparencia", label: "Aparência", icon: Palette },
 ];
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+function isActiveHref(pathname: string, href: string) {
+  return pathname === href || (href !== "/admin" && pathname.startsWith(href));
+}
+
+export function AdminShell({
+  children,
+  defaultSidebarOpen = true,
+}: {
+  children: React.ReactNode;
+  defaultSidebarOpen?: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const isLogin = pathname === "/admin/login";
@@ -45,106 +77,80 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const activeItem = navItems.find((item) => isActiveHref(pathname, item.href));
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 border-b border-border bg-background p-3 md:hidden">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary font-heading text-sm text-primary-foreground">
+    <SidebarProvider defaultOpen={defaultSidebarOpen}>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          <div className="flex items-center gap-3 px-2 py-1.5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-heading text-sm text-primary-foreground">
               M
             </span>
-            <div>
+            <div className="min-w-0 group-data-[collapsible=icon]:hidden">
               <p className="caption-uppercase text-muted-foreground">admin</p>
-              <p className="font-heading text-lg leading-none">Portfólio</p>
+              <h1 className="truncate font-heading text-base leading-none">Portfólio</h1>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-            aria-label="Sair"
-          >
-            <LogOut size={17} />
-          </button>
-        </div>
+        </SidebarHeader>
 
-        <nav className="flex gap-1 overflow-x-auto rounded-lg bg-muted/70 p-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active =
-              pathname === item.href ||
-              (item.href !== "/admin" && pathname.startsWith(item.href));
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActiveHref(pathname, item.href);
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+                        <Link href={item.href}>
+                          <Icon />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={handleLogout}
+                tooltip="Sair"
                 className={cn(
-                  "flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-background hover:text-foreground",
+                  "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
                 )}
               >
-                <Icon size={16} />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </header>
+                <LogOut />
+                <span>Sair</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
 
-      <div className="mx-auto flex min-h-screen max-w-[90rem]">
-        <aside className="sticky top-0 hidden h-screen w-72 shrink-0 p-4 md:block">
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-3">
-            <div className="mb-6 flex items-center gap-3 px-2 pt-2">
-              <span className="flex size-10 items-center justify-center rounded-lg bg-primary font-heading text-base text-primary-foreground">
-                M
-              </span>
-              <div>
-                <p className="caption-uppercase text-muted-foreground">admin</p>
-                <h1 className="font-heading text-xl leading-none">Portfólio</h1>
-              </div>
-            </div>
+      <SidebarInset>
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/95 px-4 backdrop-blur">
+          <SidebarTrigger />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>{activeItem?.label ?? "Admin"}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
 
-            <nav className="space-y-1 rounded-lg bg-muted/50 p-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const active =
-                  pathname === item.href ||
-                  (item.href !== "/admin" && pathname.startsWith(item.href));
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-background hover:text-foreground",
-                    )}
-                  >
-                    <Icon size={17} />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="mt-auto flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-            >
-              <LogOut size={17} />
-              Sair
-            </button>
-          </div>
-        </aside>
-
-        <main className="min-w-0 flex-1 p-4 sm:p-6 md:p-8">{children}</main>
-      </div>
-    </div>
+        <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

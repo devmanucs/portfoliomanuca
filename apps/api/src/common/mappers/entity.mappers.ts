@@ -4,6 +4,7 @@
   IInterest,
   IProfile,
   IProject,
+  ISiteTheme,
   ISkill,
 } from '@portfoliomanuca/types';
 import type {
@@ -13,6 +14,7 @@ import type {
   Profile,
   Project,
   Skill,
+  SiteTheme,
 } from '@prisma/client';
 import {
   mapEmploymentToApi,
@@ -50,6 +52,17 @@ export function mapProfile(profile: Profile): IProfile {
     website: profile.website,
     avatarUrl: profile.avatarUrl,
     resumeSummary: profile.resumeSummary,
+  };
+}
+
+export function mapSiteTheme(siteTheme: SiteTheme): ISiteTheme {
+  const tokens = siteTheme.tokens as { light?: Record<string, string>; dark?: Record<string, string> } | null;
+  return {
+    tokens: {
+      light: tokens?.light ?? {},
+      dark: tokens?.dark ?? {},
+    },
+    updatedAt: siteTheme.updatedAt.toISOString(),
   };
 }
 

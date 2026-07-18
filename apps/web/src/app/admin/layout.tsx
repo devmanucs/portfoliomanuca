@@ -1,9 +1,13 @@
+import { cookies } from "next/headers";
 import { AdminShell } from "@/features/admin/components/admin-shell";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminShell>{children}</AdminShell>;
+  const cookieStore = await cookies();
+  const defaultSidebarOpen = cookieStore.get("sidebar_state")?.value !== "false";
+
+  return <AdminShell defaultSidebarOpen={defaultSidebarOpen}>{children}</AdminShell>;
 }

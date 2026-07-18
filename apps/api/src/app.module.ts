@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProfileModule } from './profile/profile.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ResumeModule } from './resume/resume.module';
+import { SiteThemeModule } from './site-theme/site-theme.module';
 import { SkillsModule } from './skills/skills.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { SkillsModule } from './skills/skills.module';
     EducationModule,
     InterestsModule,
     ResumeModule,
+    SiteThemeModule,
   ],
 })
 export class AppModule {}

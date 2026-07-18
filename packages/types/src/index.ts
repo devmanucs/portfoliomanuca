@@ -6,6 +6,14 @@ export type EmploymentType =
   | "FREELANCE"
   | "INTERNSHIP";
 
+export interface ISiteTheme {
+  tokens: {
+    light: Record<string, string>;
+    dark: Record<string, string>;
+  };
+  updatedAt?: string;
+}
+
 export interface IProfile {
   id: string;
   fullName: string;
