@@ -68,7 +68,7 @@ export default function AdminLoginPageClient() {
 
   return (
     <main className="min-h-screen bg-background p-4 sm:p-8">
-      <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-4rem)]">
+      <div className="mx-auto flex min-h-[calc(100vh-2rem)] flex-col sm:min-h-[calc(100vh-4rem)]">
         <Button asChild variant="ghost" className="mb-6 w-fit">
           <Link href="/">
             <ArrowLeft data-icon="inline-start" />
@@ -76,58 +76,25 @@ export default function AdminLoginPageClient() {
           </Link>
         </Button>
 
-        <Frame className="my-auto w-full">
-          <div className="grid lg:grid-cols-[0.9fr_1.1fr]">
-            <FramePanel className="flex flex-col justify-between gap-12 border-0 bg-muted p-7 sm:p-10 lg:rounded-r-none">
+        <Frame className="my-auto max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-[0.9fr_1.1fr] ">
+            <FramePanel className="flex justify-between bg-muted gap-12 border-0 items-center p-7 sm:p-10 lg:rounded-r-none">
               <div>
-                <div className="mb-10 flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <span className="text-lg font-semibold">M</span>
-                </div>
                 <p className="mb-3 text-sm font-medium text-primary">
-                  Área privada
+                  Área privada!
                 </p>
                 <h1 className="max-w-md text-3xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl">
-                  Seu portfólio, organizado em um só lugar.
+                  Meu portfólio, organizado em um só lugar.
                 </h1>
                 <p className="mt-5 max-w-md text-sm leading-6 text-body">
-                  Atualize seu trabalho e gere o currículo sem duplicar
-                  informações.
+                  Atualizo aqui meus trabalhos, gero o currículo sem duplicar
+                  informações, altero diretamente no cadastro dinâmico o meu portfólio.
                 </p>
-              </div>
-
-              <div className="flex flex-col gap-5">
-                {benefits.map(({ icon: Icon, title, description }) => (
-                  <div key={title} className="flex gap-3">
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-border-strong bg-card text-primary">
-                      <Icon size={16} aria-hidden />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">
-                        {title}
-                      </p>
-                      <p className="mt-1 text-sm leading-5 text-muted-foreground">
-                        {description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
               </div>
             </FramePanel>
 
-            <FramePanel className="flex min-h-[34rem] flex-col justify-center border-0 p-7 sm:p-10 lg:rounded-l-none">
+            <FramePanel className="flex min-h-136 flex-col justify-center border-0 p-7 sm:p-10 lg:rounded-l-none">
               <div className="mx-auto w-full max-w-sm">
-                <FrameHeader className="mb-8 px-0 py-0">
-                  <div className="mb-4 flex size-10 items-center justify-center rounded-md border border-border bg-canvas-soft text-primary">
-                    <LockKeyhole size={18} aria-hidden />
-                  </div>
-                  <FrameTitle className="text-2xl font-semibold">
-                    Bem-vinda de volta
-                  </FrameTitle>
-                  <FrameDescription className="mt-2 leading-6">
-                    Entre com as credenciais definidas no seed da API.
-                  </FrameDescription>
-                </FrameHeader>
-
                 <FormProvider {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -137,7 +104,7 @@ export default function AdminLoginPageClient() {
                       name="email"
                       label="Email"
                       type="email"
-                      placeholder="seu@email.com"
+                      placeholder="exemplo@email.com"
                       autoComplete="email"
                       autoFocus
                     />
@@ -155,28 +122,21 @@ export default function AdminLoginPageClient() {
                       disabled={form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                        <>
                           <LoaderCircle
                             data-icon="inline-start"
                             className="animate-spin"
                           />
-                          Entrando...
-                        </>
                       ) : (
-                        "Entrar no painel"
+                        "Entrar"
                       )}
                     </Button>
                   </form>
                 </FormProvider>
-
-                <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
-                  Este acesso não possui cadastro público nem recuperação de
-                  senha. As credenciais são administradas pela API.
-                </p>
               </div>
             </FramePanel>
           </div>
         </Frame>
+
       </div>
     </main>
   );
