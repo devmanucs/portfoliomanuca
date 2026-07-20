@@ -44,6 +44,18 @@ const defaultTechnologies = [
   { name: "css", icon: SiCss, color: "currentColor" },
 ];
 
+// Skills entered with different casing (e.g. "react" and "React") should
+// still render as a single entry -- keeps the first occurrence.
+function dedupeByName(skills: ISkill[]): ISkill[] {
+  const seen = new Set<string>();
+  return skills.filter((skill) => {
+    const key = skill.name.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 type TechnologiesProps = {
   skills?: ISkill[];
   additionalSkills?: string[];
@@ -59,28 +71,25 @@ export function Technologies({
 
   const primarySkills =
     skills.length > 0
-      ? skills
-          .filter((skill) => skill.iconKey || iconMap[skill.name.toLowerCase()])
-          .map((skill) => {
-            const key = (skill.iconKey ?? skill.name).toLowerCase();
-            const Icon = iconMap[key] ?? SiReact;
-            return {
-              name: skill.name.toLowerCase(),
-              icon: Icon,
-              color: skill.color ?? "currentColor",
-            };
-          })
+      ? dedupeByName(
+          skills.filter((skill) => skill.iconKey || iconMap[skill.name.toLowerCase()]),
+        ).map((skill) => {
+          const key = (skill.iconKey ?? skill.name).toLowerCase();
+          const Icon = iconMap[key] ?? SiReact;
+          return {
+            name: skill.name.toLowerCase(),
+            icon: Icon,
+            color: skill.color ?? "currentColor",
+          };
+        })
       : defaultTechnologies;
 
   const extras =
     additionalSkills.length > 0
-      ? additionalSkills
-      : skills
-          .filter(
-            (skill) =>
-              !skill.iconKey && !iconMap[skill.name.toLowerCase()],
-          )
-          .map((skill) => skill.name.toLowerCase());
+      ? Array.from(new Set(additionalSkills.map((name) => name.toLowerCase())))
+      : dedupeByName(
+          skills.filter((skill) => !skill.iconKey && !iconMap[skill.name.toLowerCase()]),
+        ).map((skill) => skill.name.toLowerCase());
 
   return (
     <section
