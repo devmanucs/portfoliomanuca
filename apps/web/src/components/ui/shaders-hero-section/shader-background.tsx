@@ -1,18 +1,25 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { MeshGradient } from "@paper-design/shaders-react";
 import { useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
 type ShaderBackgroundProps = {
   children: ReactNode;
+  className?: string;
 };
 
-export function ShaderBackground({ children }: ShaderBackgroundProps) {
+export function ShaderBackground({ children, className }: ShaderBackgroundProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <div className="relative min-h-[125svh] w-full overflow-hidden bg-[#120d0b] text-white">
+    <div
+      className={cn(
+        "relative min-h-[125svh] w-full overflow-hidden bg-[#120d0b] text-white",
+        className,
+      )}
+    >
       <MeshGradient
         className="absolute inset-0 size-full"
         colors={["#120d0b", "#3a241b", "#72503e", "#b8b4ae", "#241713"]}

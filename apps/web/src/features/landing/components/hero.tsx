@@ -44,11 +44,11 @@ export function Hero({ profile }: HeroProps) {
             </h1>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg" variant="ghost" radius="pill">
+              <Button asChild size="lg" variant="secondary" radius="pill">
                 <a href="#projetos">ver projetos</a>
               </Button>
 
-              <Button asChild size="lg" variant="outline" radius="pill">
+              <Button asChild size="lg" variant="secondary" radius="pill">
                 <a href="#contato">vamos conversar</a>
               </Button>
             </div>
