@@ -73,16 +73,16 @@ export function GithubCommitList({ commits }: GithubCommitListProps) {
               <CommitRow key={commit.sha} commit={commit} />
             ))}
           </ol>
-          <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-card via-card/85 to-transparent pb-1">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              radius="pill"
-              onClick={() => setExpanded(true)}
+          <div className="absolute inset-0 flex items-end justify-center bg-linear-to-t from-card via-card/85 to-transparent pb-1">
+            <a
+              href="https://github.com/devmanucs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-4 py-1.5 text-sm font-medium rounded-full border border-input bg-background hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
-              ver mais {hidden.length} commits
-            </Button>
+              ver mais commits
+            </a>
+       
           </div>
         </div>
       ) : null}

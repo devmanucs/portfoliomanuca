@@ -50,9 +50,9 @@ export function PortfolioFloatingNav() {
       icon: <Home className="size-5" />,
     },
     {
-      name: "sobre",
-      link: "#sobre",
-      icon: <User className="size-5" />,
+      name: "projetos",
+      link: "#projetos",
+      icon: <Briefcase className="size-5" />,
     },
     {
       name: "stacks",
@@ -60,14 +60,14 @@ export function PortfolioFloatingNav() {
       icon: <Code2 className="size-5" />,
     },
     {
-      name: "projetos",
-      link: "#projetos",
-      icon: <Briefcase className="size-5" />,
-    },
-    {
       name: "experiências",
       link: "#experiencias",
       icon: <History className="size-5" />,
+    },
+    {
+      name: "sobre",
+      link: "#sobre",
+      icon: <User className="size-5" />,
     },
     {
       name: "contato",

@@ -1,14 +1,15 @@
 "use client";
 
 import type { IProfile } from "@portfoliomanuca/types";
-import { ArrowUp, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowUp, Github, Linkedin, Mail, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navLinks = [
   { href: "#inicio", label: "início" },
-  { href: "#sobre", label: "sobre" },
-  { href: "#stacks", label: "stacks" },
   { href: "#projetos", label: "projetos" },
+  { href: "#stacks", label: "stacks" },
+  { href: "#experiencias", label: "experiências"},
+  { href: "#sobre", label: "sobre" },
   { href: "#contato", label: "contato" },
 ];
 
@@ -45,9 +46,6 @@ export function Footer({ profile }: FooterProps) {
 
       <div className="mx-auto max-w-6xl">
         <div className="max-w-lg">
-          <p className="mb-3 text-xs uppercase tracking-widest text-sage">
-            contato
-          </p>
           <h2 className="mb-4 text-3xl font-medium tracking-tight text-foreground md:text-4xl">
             fale comigo
           </h2>
@@ -67,9 +65,10 @@ export function Footer({ profile }: FooterProps) {
               href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-foreground underline-offset-4 transition-colors hover:text-sage hover:underline"
+              className="flex items-center gap-3 text-foreground transition-colors hover:text-sage"
             >
-              WhatsApp
+              <MessageCircle size={16} className="text-sage" />
+              whatsApp
             </a>
             {profile.location ? (
               <p className="text-muted-foreground">{profile.location}</p>

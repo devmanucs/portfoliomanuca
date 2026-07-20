@@ -185,6 +185,7 @@
 
   --animate-fade-in-up: fade-in-up 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-marquee: marquee 24s linear infinite;
+  --animate-card-shine: card-shine 1.5s ease-out;
 }
 
 @layer base {
@@ -309,6 +310,22 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes card-shine {
+  0% {
+    transform: translateX(-140%) skewX(-16deg);
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(340%) skewX(-16deg);
+    opacity: 0;
   }
 }
 

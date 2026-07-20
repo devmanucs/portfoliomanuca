@@ -6,10 +6,10 @@ import { SECTION_IDS } from "../constants";
 
 const SECTION_LABELS: Record<string, string> = {
   inicio: "início",
-  sobre: "sobre",
-  stacks: "stacks",
   projetos: "projetos",
+  stacks: "stacks",
   experiencias: "experiências",
+  sobre: "sobre",
   contato: "contato",
 };
 

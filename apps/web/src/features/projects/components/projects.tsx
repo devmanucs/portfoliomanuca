@@ -43,7 +43,7 @@ export function Projects({ projects }: ProjectsProps) {
           </h2>
 
           <p className="mt-4 max-w-2xl text-base leading-7 text-body">
-            Cases de design e desenvolvimento, clique e veja mais.
+            Cases de design e desenvolvimento, clique no card e veja mais detalhes.
           </p>
         </div>
 

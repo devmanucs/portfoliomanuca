@@ -24,18 +24,18 @@ export function LandingFeature({ content }: LandingFeatureProps) {
       <PortfolioFloatingNav />
       <ScrollProgressRail />
       <Hero profile={content.profile} />
-      <About />
+      <Projects projects={content.projects} />
       <Technologies
         skills={content.skills}
         additionalSkills={content.additionalSkills}
         activitySlot={<GithubActivity />}
       />
-      <Projects projects={content.projects} />
       <Extras
         experiences={content.experiences}
         education={content.education}
         interests={content.interests}
       />
+      <About />
       <Footer profile={content.profile} />
     </main>
   );

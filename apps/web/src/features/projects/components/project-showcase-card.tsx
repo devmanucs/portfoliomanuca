@@ -1,26 +1,32 @@
 "use client";
 
-import { focusLabels, type Project } from "../data/projects-data";
+import { focusLabels, type Project, type ProjectFocus } from "../data/projects-data";
 import { Badge } from "@/components/ui/badge";
-import { Frame, FramePanel } from "@/components/ui/frame";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
+import { Code2, Layers, Palette, Sparkles, type LucideIcon } from "lucide-react";
 import Image from "next/image";
+
+const focusIcons: Record<ProjectFocus, LucideIcon> = {
+  design: Palette,
+  development: Code2,
+  hybrid: Layers,
+};
 
 type ProjectShowcaseCardProps = {
   project: Project;
   index: number;
-  featured?: boolean;
   onClick: () => void;
 };
 
 export function ProjectShowcaseCard({
   project,
   index,
-  featured = false,
   onClick,
 }: ProjectShowcaseCardProps) {
+  const FocusIcon = focusIcons[project.focus];
+
   return (
     <motion.button
       type="button"
@@ -29,56 +35,73 @@ export function ProjectShowcaseCard({
       viewport={{ once: true }}
       transition={{ duration: 0.35, delay: index * 0.05 }}
       onClick={onClick}
-      className={cn(
-        "group shrink-0 snap-center text-left",
-        featured
-          ? "w-[min(88vw,27rem)]"
-          : "w-[min(84vw,22rem)]",
-      )}
+      className="group h-full w-full text-left"
     >
-      <Frame className="h-full transition-colors group-hover:border-primary/40">
-        <FramePanel className="h-56 overflow-hidden p-0">
-          <Image
-            src={project.image}
-            alt={`Preview do projeto ${project.title}`}
-            fill
-            sizes={featured ? "(max-width: 640px) 88vw, 432px" : "(max-width: 640px) 84vw, 352px"}
-            className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.025]"
-          />
-        </FramePanel>
+      <Card
+        className={cn(
+          "relative h-full gap-0 overflow-hidden border-border/80 bg-card/90 py-0 shadow-sm backdrop-blur-sm",
+          "transition-[transform,box-shadow,border-color,background-color] duration-500 ease-out",
+          "group-hover:-translate-y-1 group-hover:border-primary/25 group-hover:bg-card/95",
+          "group-hover:shadow-[0_24px_50px_-28px_color-mix(in_oklch,var(--primary)_38%,transparent)]",
+        )}
+      >
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 z-10 rounded-[inherit] opacity-0",
+            "bg-linear-to-br from-white/12 via-white/4 to-primary/10",
+            "ring-1 ring-inset ring-white/10 transition-opacity duration-500 group-hover:opacity-100",
+            "dark:from-white/8 dark:via-transparent dark:to-primary/15",
+          )}
+        />
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-y-0 -left-1/3 z-20 w-1/2 -skew-x-16 opacity-0",
+            "bg-linear-to-r from-transparent via-white/35 to-transparent",
+            "dark:via-white/15",
+            "group-hover:animate-card-shine group-hover:opacity-100",
+          )}
+        />
 
-        <FramePanel className="flex flex-1 flex-col">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="mb-2 text-xs text-muted-foreground">
-                {focusLabels[project.focus]} · {project.category.toLowerCase()}
-              </p>
-              <h3 className="text-lg font-semibold leading-snug text-foreground">
-                {project.title}
-              </h3>
-            </div>
-            <ArrowUpRight
-              size={18}
-              className="mt-1 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
+        <CardContent className="relative z-1 flex flex-col gap-4 p-4">
+          <div className="relative h-48 w-full overflow-hidden rounded-lg">
+            <Image
+              src={project.image}
+              alt={`Preview do projeto ${project.title}`}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.025]"
             />
           </div>
 
-          <p className="mt-3 line-clamp-2 text-sm leading-6 text-body">
-            {project.description}
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            {project.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary">
-                {tag}
-              </Badge>
-            ))}
-            {project.tags.length > 3 ? (
-              <Badge variant="outline">+{project.tags.length - 3}</Badge>
-            ) : null}
+          <div className="flex items-center justify-between gap-4">
+            <Badge variant="outline">
+              <FocusIcon aria-hidden="true" />
+              {focusLabels[project.focus]}
+            </Badge>
+            {project.featured ? (
+              <div className="flex items-center gap-1 text-secondary-foreground">
+                <Sparkles aria-hidden="true" className="size-3.5" />
+                <span className="text-xs font-medium">Destaque</span>
+              </div>
+            ) : (
+              <span className="text-xs text-muted-foreground">
+                {project.category.toLowerCase()}
+              </span>
+            )}
           </div>
-        </FramePanel>
-      </Frame>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <h3 className="text-base font-semibold leading-snug text-foreground">
+              {project.title}
+            </h3>
+            <p className="line-clamp-3 text-sm leading-6 text-body">
+              {project.description}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </motion.button>
   );
 }

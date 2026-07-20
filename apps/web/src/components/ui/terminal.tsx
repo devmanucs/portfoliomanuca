@@ -296,10 +296,11 @@ export const Terminal = ({
             : "border-border gap-y-2 p-4"
         )}
       >
-        <span
-          className="size-1.5 shrink-0 rounded-full bg-coral motion-safe:animate-pulse"
-          aria-hidden
-        />
+        <span className="flex shrink-0 items-center gap-1.5" aria-hidden>
+          <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="size-2.5 rounded-full bg-[#febc2e]" />
+          <span className="size-2.5 rounded-full bg-[#28c840]" />
+        </span>
 
         {title ? (
           <span className="truncate font-mono text-xs text-muted-foreground">{title}</span>
