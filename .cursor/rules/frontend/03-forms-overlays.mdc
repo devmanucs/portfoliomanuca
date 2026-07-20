@@ -1,0 +1,17 @@
+---
+globs: "fbi_front/src/features/**/components/*form*.tsx,fbi_front/src/features/**/components/*modal*.tsx,fbi_front/src/features/**/schemas/**/*.ts"
+alwaysApply: false
+---
+
+# Formularios, sheets, drawers e dialogs
+
+- Formularios de feature usam React Hook Form com `useForm<T>()` e Zod via `zodResolver`. Veja @fbi_front/src/features/clientes/components/form-clientes.tsx e @fbi_front/src/features/representantes/components/form-representantes.tsx.
+- Schemas, transforms de payload e tipos derivados (`z.input`, `z.output`) ficam em `src/features/<feature>/schemas/`. Veja @fbi_front/src/features/clientes/schemas/client.ts.
+- Prefira `FormProvider as Form` ao compor muitos campos e use os wrappers de @fbi_front/src/components/shared/form-fields.tsx para `Input`, `Select`, `AsyncCombobox`, `Checkbox`, `Switch`, `Textarea`, `ColorPicker` etc.
+- Para campos que nao cabem no wrapper compartilhado, use `Controller` + componentes de `@/components/ui` seguindo a estrutura `Field`, `FieldLabel`, controle e `FieldError`/mensagem de erro.
+- Default values devem ser explicitos e estaveis. Para edicao, crie helpers `createDefaultValues`/`createFormValues` no schema ou utils da feature e resete o form quando o modal abrir, como nos cadastros existentes.
+- Payloads devem ser gerados por schema/transform ou helper nomeado (`createClientRequestPayload`, `createRepresentantePayload`), nao inline no submit.
+- Para sheets/dialogs controlados pela feature, exponha e consuma `open` e `onOpenChange`. O padrao global atual usa @fbi_front/src/hooks/use-modal.ts com `useModalInstance`, como em @fbi_front/src/features/clientes/components/form-clientes.tsx.
+- Nao existe `useDisclosure` global neste projeto hoje. Se um overlay for puramente local e nao precisar do provider global, crie estado local simples ou um hook pequeno no escopo adequado; so promova para `src/hooks/use-disclosure.ts` se houver reutilizacao clara.
+- Componentes de overlay devem receber `open`/`onOpenChange` quando forem reutilizaveis; nao esconda estado global dentro de componentes compartilhados.
+- Use `Sheet`, `Dialog`, `AlertDialog` e `Drawer` de `@/components/ui`; nao instale outra biblioteca para overlay.

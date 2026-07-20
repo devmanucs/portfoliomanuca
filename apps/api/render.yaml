@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: portfoliomanuca-api
+    runtime: node
+    rootDir: apps/api
+    buildCommand: pnpm install && pnpm prisma:generate && pnpm build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

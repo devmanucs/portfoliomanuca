@@ -1,0 +1,19 @@
+---
+alwaysApply: false
+---
+# Arquitetura de pastas
+
+- `src/app/**/page.tsx` deve ser fino: compoe layout, Suspense/loading e renderiza a feature. Exemplo: @fbi_front/src/app/(root)/cadastros/clientes/page.tsx.
+- A tela real da rota vive em `src/features/<feature>/feature.tsx`. Exemplo canonico: @fbi_front/src/features/clientes/feature.tsx.
+- Componentes especificos da feature ficam em `src/features/<feature>/components/`.
+- Schemas Zod e transformacoes de payload da feature ficam em `src/features/<feature>/schemas/`. Exemplos: @fbi_front/src/features/clientes/schemas/client.ts e @fbi_front/src/features/representantes/schemas/representantes.ts.
+- Constantes, chaves de query/mutation e rotas de modulo ficam em `src/features/<feature>/utils/`, seguindo as features de cadastro.
+- Tipos compartilhados por dominio ficam em `src/domains/<domain>/types.ts` quando sao contratos do dominio da feature, ou `src/types/<domain>/types.ts` quando seguem o padrao legado compartilhado. Exemplos: @fbi_front/src/domains/clientes/types.ts e @fbi_front/src/types/pessoas/types.ts.
+- Hooks globais e reutilizaveis ficam em `src/hooks/`. Hooks especificos da feature ficam em `src/features/<feature>/hooks/`.
+- Componentes globais de infraestrutura ficam em `src/components/ui`, `src/components/shared`, `src/components/datatable` e `src/components/layout`; nao crie uma nova pasta global de componentes.
+- Features podem importar de camadas globais (`components`, `hooks`, `lib`, `types`, `domains`) e de seus proprios arquivos. Evite importar componentes internos de uma feature irma, salvo quando o projeto ja define aquilo como fonte compartilhada, como os campos de pessoa em @fbi_front/src/features/pessoas/components/form-fields.tsx.
+- Se duas features precisam da mesma logica, primeiro procure fonte compartilhada existente; so mova para `src/components/shared`, `src/hooks` ou `src/lib` quando houver reutilizacao real.
+- Aplique Clean Code e SOLID com parcimonia: responsabilidade unica por componente/hook/helper, dependencias apontando para contratos simples, funcoes pequenas e nomes descritivos.
+- Prefira composicao a heranca e injecao por props/parametros a acoplamento direto quando isso reduzir dependencias entre camadas.
+- Nao crie interfaces, services ou factories genericas apenas para "cumprir SOLID". A abstracao so deve existir quando houver duplicacao real, variacao clara ou necessidade de isolar uma regra de negocio.
+- Mantenha regras de negocio fora do JSX sempre que crescerem: mova transformacoes, normalizacoes e payloads para `schemas`, `utils` ou hooks da propria feature, como em @fbi_front/src/features/clientes/schemas/client.ts.
