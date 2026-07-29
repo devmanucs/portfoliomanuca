@@ -121,29 +121,29 @@ function mapEducationToLanding(edu: IEducation): LandingEducation {
 }
 
 export async function loadProfile(): Promise<IProfile> {
-  const profile = await serverFetch<IProfile>("/profile");
+  const profile = await serverFetch<IProfile>("/profile", ["profile"]);
   return profile ?? staticProfile;
 }
 
 export async function loadProjects(): Promise<Project[]> {
-  const projects = await serverFetch<IProject[]>("/projects");
+  const projects = await serverFetch<IProject[]>("/projects", ["projects"]);
   if (projects?.length) return mapApiProjectsToUi(projects);
   return staticProjects;
 }
 
 export async function loadProjectBySlug(slug: string): Promise<Project | null> {
-  const project = await serverFetch<IProject>(`/projects/${slug}`);
+  const project = await serverFetch<IProject>(`/projects/${slug}`, ["projects"]);
   if (project) return mapApiProjectsToUi([project])[0] ?? null;
   return staticProjects.find((item) => item.slug === slug) ?? null;
 }
 
 export async function loadSkills(): Promise<ISkill[]> {
-  const skills = await serverFetch<ISkill[]>("/skills");
+  const skills = await serverFetch<ISkill[]>("/skills", ["skills"]);
   return skills ?? [];
 }
 
 export async function loadExperiences(): Promise<LandingExperience[]> {
-  const experiences = await serverFetch<IExperience[]>("/experiences");
+  const experiences = await serverFetch<IExperience[]>("/experiences", ["experiences"]);
   if (experiences?.length) {
     return experiences.map(mapExperienceToLanding);
   }
@@ -151,7 +151,7 @@ export async function loadExperiences(): Promise<LandingExperience[]> {
 }
 
 export async function loadEducation(): Promise<LandingEducation[]> {
-  const education = await serverFetch<IEducation[]>("/education");
+  const education = await serverFetch<IEducation[]>("/education", ["education"]);
   if (education?.length) {
     return education.map(mapEducationToLanding);
   }
@@ -159,7 +159,7 @@ export async function loadEducation(): Promise<LandingEducation[]> {
 }
 
 export async function loadInterests(): Promise<string[]> {
-  const interests = await serverFetch<IInterest[]>("/interests");
+  const interests = await serverFetch<IInterest[]>("/interests", ["interests"]);
   if (interests?.length) {
     return interests.map((item) => item.name);
   }

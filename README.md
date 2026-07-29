@@ -6,7 +6,22 @@ Monorepo com frontend Next.js (`apps/web`), API NestJS + Prisma (`apps/api`) e p
 
 - **Produção / preferido:** use a connection string do **Supabase Postgres** em `DATABASE_URL` (Settings → Database).
 - **Local:** `docker compose up -d` sobe Postgres 16 em `localhost:5432` (user/senha/db: `postgres` / `postgres` / `portfoliomanuca`).
-- Uploads de imagens: configure **Supabase Storage** (bucket público ou signed URLs) e aponte as URLs nos campos `coverImage` / `gallery`.
+
+## Upload de imagens/vídeos (Supabase Storage)
+
+O admin faz upload de arquivo direto do computador (`POST /uploads`, endpoint em `apps/api/src/uploads`). Sem essas variáveis configuradas, o upload retorna erro pedindo pra configurar -- os campos de imagem continuam aceitando colar uma URL normalmente.
+
+1. No seu projeto Supabase: **Storage → New bucket** → crie um bucket **público** (ex.: `portfolio-media`).
+2. Em **Project Settings → API**, copie a **Project URL** e a chave **service_role** (não é a `anon`/pública -- o upload roda só no backend).
+3. Preencha em `apps/api/.env`:
+
+```bash
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+SUPABASE_STORAGE_BUCKET=portfolio-media
+```
+
+4. Reinicie a API (`pnpm dev:api`). O botão de upload no admin passa a funcionar; as URLs públicas do bucket são salvas em `coverImage`/`gallery` normalmente.
 
 ## Setup rápido
 

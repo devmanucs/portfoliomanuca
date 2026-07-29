@@ -6,19 +6,103 @@ export type ThemeTokens = { light: TokenMap; dark: TokenMap };
 
 export const DEFAULT_RADIUS_REM = 0.5;
 
-/**
- * The theme currently shipped in globals.css. Selecting this preset means
- * "use the base CSS defaults" -- its token maps stay empty so it behaves
- * exactly like "restore defaults" instead of duplicating the same values.
- */
-const ESPRESSO_TOKENS: ThemeTokens = { light: {}, dark: {} };
+export const RADIUS_OPTIONS: { label: string; value: number }[] = [
+  { label: "Nenhum", value: 0 },
+  { label: "Pequeno", value: 0.3 },
+  { label: "Padrão", value: DEFAULT_RADIUS_REM },
+  { label: "Grande", value: 0.75 },
+];
+
+export type FontOption = {
+  id: string;
+  label: string;
+  /** Family name as registered with the Google Fonts CSS2 API. */
+  googleFamily: string;
+  /** Value written to the CSS var: quoted family + generic fallback. */
+  stack: string;
+};
+
+// A small curated set (not the full Google Fonts catalog) -- each is loaded
+// on demand via a <link> tag when selected (see use-google-font.ts), same
+// approach shadcn's own theme playground uses so arbitrary fonts don't have
+// to be bundled at build time.
+export const HEADING_FONT_OPTIONS: FontOption[] = [
+  { id: "bricolage", label: "Bricolage Grotesque", googleFamily: "Bricolage Grotesque", stack: "'Bricolage Grotesque', system-ui, sans-serif" },
+  { id: "space-grotesk", label: "Space Grotesk", googleFamily: "Space Grotesk", stack: "'Space Grotesk', system-ui, sans-serif" },
+  { id: "playfair", label: "Playfair Display", googleFamily: "Playfair Display", stack: "'Playfair Display', Georgia, serif" },
+  { id: "poppins", label: "Poppins", googleFamily: "Poppins", stack: "'Poppins', system-ui, sans-serif" },
+  { id: "inter-heading", label: "Inter", googleFamily: "Inter", stack: "'Inter', system-ui, sans-serif" },
+];
+
+export const BODY_FONT_OPTIONS: FontOption[] = [
+  { id: "inter", label: "Inter", googleFamily: "Inter", stack: "'Inter', system-ui, sans-serif" },
+  { id: "roboto", label: "Roboto", googleFamily: "Roboto", stack: "'Roboto', system-ui, sans-serif" },
+  { id: "ibm-plex", label: "IBM Plex Sans", googleFamily: "IBM Plex Sans", stack: "'IBM Plex Sans', system-ui, sans-serif" },
+  { id: "source-sans", label: "Source Sans 3", googleFamily: "Source Sans 3", stack: "'Source Sans 3', system-ui, sans-serif" },
+  { id: "jetbrains-mono", label: "JetBrains Mono", googleFamily: "JetBrains Mono", stack: "'JetBrains Mono', monospace" },
+];
 
 /**
- * The literal values ESPRESSO_TOKENS falls back to. Needed because the
- * advanced editor and contrast checks must always have a concrete color to
- * read, even when nothing is overridden yet.
+ * The neutral shadcn-style theme shipped as the `.admin-scope` CSS defaults
+ * in globals.css. Selecting this preset means "use those base defaults" --
+ * its token maps stay empty so it behaves like "restore defaults" instead of
+ * duplicating the same values. This is the admin panel's default preset.
  */
-export const ESPRESSO_RESOLVED_DEFAULTS: ThemeTokens = {
+const NEUTRAL_TOKENS: ThemeTokens = { light: {}, dark: {} };
+
+/**
+ * The literal values NEUTRAL_TOKENS falls back to (mirrors `.admin-scope` /
+ * `.dark .admin-scope` in globals.css). Needed because the advanced editor
+ * and contrast checks must always have a concrete color to read, even when
+ * nothing is overridden yet.
+ */
+export const NEUTRAL_RESOLVED_DEFAULTS: ThemeTokens = {
+  light: {
+    "--background": "oklch(1 0 0)",
+    "--foreground": "oklch(0% 0 0)",
+    "--card": "oklch(1 0 0)",
+    "--secondary": "oklch(0.97 0 0)",
+    "--muted": "oklch(0.97 0 0)",
+    "--border": "oklch(0.922 0 0)",
+    "--primary": "oklch(0% 0 0)",
+    "--primary-active": "oklch(0.269 0 0)",
+    "--accent": "oklch(0.97 0 0)",
+    "--ring": "oklch(0.708 0 0)",
+    "--destructive": "oklch(0.577 0.245 27.325)",
+    "--success": "oklch(0.52 0.13 145)",
+    "--chart-1": "oklch(0.205 0 0)",
+    "--chart-2": "oklch(0.446 0 0)",
+    "--chart-3": "oklch(0.556 0 0)",
+    "--chart-4": "oklch(0.708 0 0)",
+    "--chart-5": "oklch(0.52 0.13 145)",
+  },
+  dark: {
+    "--background": "oklch(0.145 0 0)",
+    "--foreground": "oklch(0.985 0 0)",
+    "--card": "oklch(0.205 0 0)",
+    "--secondary": "oklch(0.269 0 0)",
+    "--muted": "oklch(0.269 0 0)",
+    "--border": "oklch(1 0 0 / 10%)",
+    "--primary": "oklch(0.922 0 0)",
+    "--primary-active": "oklch(0.78 0 0)",
+    "--accent": "oklch(0.371 0 0)",
+    "--ring": "oklch(0.556 0 0)",
+    "--destructive": "oklch(0.704 0.191 22.216)",
+    "--success": "oklch(0.72 0.14 145)",
+    "--chart-1": "oklch(0.92 0 0)",
+    "--chart-2": "oklch(0.78 0 0)",
+    "--chart-3": "oklch(0.65 0 0)",
+    "--chart-4": "oklch(0.45 0 0)",
+    "--chart-5": "oklch(0.72 0.14 145)",
+  },
+};
+
+/**
+ * Literal values for the old brand ("Espresso") look, kept as a selectable
+ * preset so the admin can still opt back into it -- but it's no longer the
+ * default, and it never touches the landing page's own :root/.dark tokens.
+ */
+const ESPRESSO_TOKENS_CONCRETE: ThemeTokens = {
   light: {
     "--background": "oklch(0.965 0.006 65)",
     "--foreground": "oklch(0.245 0.025 45)",
@@ -60,21 +144,21 @@ export const ESPRESSO_RESOLVED_DEFAULTS: ThemeTokens = {
 };
 
 export const PRIMARY_FOREGROUND: Record<Mode, string> = {
-  light: "oklch(0.985 0.003 65)",
-  dark: "oklch(0.16 0.015 45)",
+  light: "oklch(0.985 0 0)",
+  dark: "oklch(0.205 0 0)",
 };
 
 // Error/success carry meaning, not brand identity -- every preset keeps them fixed.
 const FIXED_DESTRUCTIVE: Record<Mode, string> = {
-  light: "oklch(0.49 0.16 28)",
-  dark: "oklch(0.68 0.14 28)",
+  light: "oklch(0.577 0.245 27.325)",
+  dark: "oklch(0.704 0.191 22.216)",
 };
 const FIXED_SUCCESS: Record<Mode, string> = {
-  light: "oklch(0.45 0.08 145)",
-  dark: "oklch(0.7 0.075 145)",
+  light: "oklch(0.52 0.13 145)",
+  dark: "oklch(0.72 0.14 145)",
 };
 // chart-5 mirrors the light "success" value in both modes, matching the
-// original Espresso defaults (a stable "positive" data color).
+// neutral defaults (a stable "positive" data color).
 const FIXED_CHART_5 = FIXED_SUCCESS.light;
 
 export const TOKEN_GROUPS: { name: string; tokens: { key: string; label: string; description?: string }[] }[] = [
@@ -198,19 +282,6 @@ function buildPresetTokens(cfg: Omit<PresetConfig, "id" | "name">): ThemeTokens 
 
 const GENERATED_PRESET_CONFIGS: PresetConfig[] = [
   {
-    id: "neutral",
-    name: "Neutral",
-    hue: 60,
-    neutralChromaLight: 0.003,
-    neutralChromaDark: 0.006,
-    primaryLLight: 0.22,
-    primaryCLight: 0.01,
-    primaryLDark: 0.85,
-    primaryCDark: 0.01,
-    accentCLight: 0.012,
-    accentCDark: 0.012,
-  },
-  {
     id: "slate",
     name: "Slate",
     hue: 230,
@@ -313,10 +384,16 @@ export type ThemePreset = {
 
 export const PRESETS: ThemePreset[] = [
   {
+    id: "neutral",
+    name: "Neutral",
+    swatch: "oklch(0% 0 0)",
+    tokens: NEUTRAL_TOKENS,
+  },
+  {
     id: "espresso",
     name: "Espresso",
     swatch: "oklch(0.405 0.06 45)",
-    tokens: ESPRESSO_TOKENS,
+    tokens: ESPRESSO_TOKENS_CONCRETE,
   },
   ...GENERATED_PRESET_CONFIGS.map((cfg) => ({
     id: cfg.id,
@@ -326,7 +403,21 @@ export const PRESETS: ThemePreset[] = [
   })),
 ];
 
-export const ESPRESSO_PRESET = PRESETS[0];
+/** Default/baseline preset for the admin panel -- neutral shadcn palette. */
+export const NEUTRAL_PRESET = PRESETS[0];
+
+export const CHART_KEYS = ["--chart-1", "--chart-2", "--chart-3", "--chart-4", "--chart-5"] as const;
+export const FONT_KEYS = ["--admin-font-heading", "--admin-font-sans"] as const;
+// Keys that are managed by their own independent picker, not by Base Color.
+const INDEPENDENT_KEYS: readonly string[] = [...CHART_KEYS, ...FONT_KEYS];
+
+export function pickKeys(map: TokenMap, keys: readonly string[]): TokenMap {
+  return Object.fromEntries(Object.entries(map).filter(([key]) => keys.includes(key)));
+}
+
+export function omitKeys(map: TokenMap, keys: readonly string[]): TokenMap {
+  return Object.fromEntries(Object.entries(map).filter(([key]) => !keys.includes(key)));
+}
 
 function normalizeTokenMap(tokens: TokenMap): string {
   return JSON.stringify(
@@ -340,19 +431,54 @@ export function sameTokens(a: ThemeTokens, b: ThemeTokens): boolean {
   return normalizeTokenMap(a.light) === normalizeTokenMap(b.light) && normalizeTokenMap(a.dark) === normalizeTokenMap(b.dark);
 }
 
+/**
+ * "Base Color" preset detection -- ignores chart and font keys so it stays
+ * accurate once Chart Color and fonts are picked independently (see
+ * findActiveChartPreset below).
+ */
 export function findActivePreset(tokens: ThemeTokens): ThemePreset | null {
-  return PRESETS.find((preset) => sameTokens(preset.tokens, tokens)) ?? null;
+  const targetLight = omitKeys(tokens.light, INDEPENDENT_KEYS);
+  const targetDark = omitKeys(tokens.dark, INDEPENDENT_KEYS);
+  return (
+    PRESETS.find((preset) => {
+      const presetLight = omitKeys(preset.tokens.light, INDEPENDENT_KEYS);
+      const presetDark = omitKeys(preset.tokens.dark, INDEPENDENT_KEYS);
+      return (
+        normalizeTokenMap(presetLight) === normalizeTokenMap(targetLight) &&
+        normalizeTokenMap(presetDark) === normalizeTokenMap(targetDark)
+      );
+    }) ?? null
+  );
 }
 
 /**
- * A preset's own tokens, filled in with the Espresso resolved defaults for
- * any key it leaves unset (in practice, only Espresso itself is sparse).
+ * "Chart Color" preset detection -- the inverse of the above: only compares
+ * --chart-*, against each preset's *resolved* (concrete) values, since a
+ * sparse preset like Neutral has no chart overrides of its own.
+ */
+export function findActiveChartPreset(tokens: ThemeTokens): ThemePreset | null {
+  const targetLight = pickKeys(tokens.light, CHART_KEYS);
+  const targetDark = pickKeys(tokens.dark, CHART_KEYS);
+  return (
+    PRESETS.find((preset) => {
+      const resolved = resolvePresetTokens(preset);
+      return (
+        normalizeTokenMap(pickKeys(resolved.light, CHART_KEYS)) === normalizeTokenMap(targetLight) &&
+        normalizeTokenMap(pickKeys(resolved.dark, CHART_KEYS)) === normalizeTokenMap(targetDark)
+      );
+    }) ?? null
+  );
+}
+
+/**
+ * A preset's own tokens, filled in with the neutral resolved defaults for
+ * any key it leaves unset (in practice, only Neutral itself is sparse).
  * Use this wherever a concrete color is needed, e.g. for the advanced
  * editor's baseline values.
  */
 export function resolvePresetTokens(preset: ThemePreset): ThemeTokens {
   return {
-    light: { ...ESPRESSO_RESOLVED_DEFAULTS.light, ...preset.tokens.light },
-    dark: { ...ESPRESSO_RESOLVED_DEFAULTS.dark, ...preset.tokens.dark },
+    light: { ...NEUTRAL_RESOLVED_DEFAULTS.light, ...preset.tokens.light },
+    dark: { ...NEUTRAL_RESOLVED_DEFAULTS.dark, ...preset.tokens.dark },
   };
 }

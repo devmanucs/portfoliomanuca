@@ -7,7 +7,8 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatOklch, parseOklch, type Oklch } from "@/lib/oklch";
-import { RotateCcw } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowTurnBackwardIcon } from "@hugeicons/core-free-icons";
 
 type OklchColorFieldProps = {
   label: string;
@@ -84,7 +85,7 @@ export function OklchColorField({
               aria-label={`Restaurar ${label} para o padrão`}
               title="Restaurar padrão"
             >
-              <RotateCcw size={14} />
+              <HugeiconsIcon icon={ArrowTurnBackwardIcon} size={14} />
             </Button>
           ) : null}
         </div>

@@ -2,12 +2,12 @@
 
 import { EmptyState } from "@/components/ds/empty-state";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Frame,
+  FrameDescription,
+  FrameHeader,
+  FramePanel,
+  FrameTitle,
+} from "@/components/ui/frame";
 import {
   ChartContainer,
   ChartTooltip,
@@ -24,7 +24,8 @@ import type {
 } from "@portfoliomanuca/types";
 import { differenceInCalendarMonths, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Briefcase, FolderKanban, Sparkles } from "lucide-react";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { Briefcase01Icon, Folder02Icon, SparklesIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import {
   Bar,
@@ -142,14 +143,14 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Skills por categoria</CardTitle>
-            <CardDescription>
+        <Frame className="lg:col-span-2">
+          <FrameHeader>
+            <FrameTitle>Skills por categoria</FrameTitle>
+            <FrameDescription>
               Distribuição das skills cadastradas.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-full">
+            </FrameDescription>
+          </FrameHeader>
+          <FramePanel className="h-full pt-0">
             {skillsByCategory.length === 0 ? (
               <EmptyState
                 title="Nenhuma skill cadastrada"
@@ -186,15 +187,15 @@ export default function AdminDashboardPage() {
                 </BarChart>
               </ChartContainer>
             )}
-          </CardContent>
-        </Card>
+          </FramePanel>
+        </Frame>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Atualizados recentemente</CardTitle>
-            <CardDescription>Últimos projetos editados.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Frame>
+          <FrameHeader>
+            <FrameTitle>Atualizados recentemente</FrameTitle>
+            <FrameDescription>Últimos projetos editados.</FrameDescription>
+          </FrameHeader>
+          <FramePanel className="pt-0">
             {recentProjects.length === 0 ? (
               <EmptyState
                 title="Nenhum projeto ainda"
@@ -225,19 +226,21 @@ export default function AdminDashboardPage() {
                 ))}
               </ul>
             )}
-          </CardContent>
-        </Card>
+          </FramePanel>
+        </Frame>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 rounded-xl border border-border bg-card p-4 sm:grid-cols-3 sm:divide-x sm:divide-border">
-        <KpiStat icon={FolderKanban} label="Projetos" value={projects.length} />
-        <KpiStat
-          icon={Briefcase}
-          label="Experiências"
-          value={experiences.length}
-        />
-        <KpiStat icon={Sparkles} label="Skills" value={skills.length} />
-      </div>
+      <Frame>
+        <FramePanel className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:divide-x sm:divide-border">
+          <KpiStat icon={Folder02Icon} label="Projetos" value={projects.length} />
+          <KpiStat
+            icon={Briefcase01Icon}
+            label="Experiências"
+            value={experiences.length}
+          />
+          <KpiStat icon={SparklesIcon} label="Skills" value={skills.length} />
+        </FramePanel>
+      </Frame>
     </div>
   );
 }
@@ -252,18 +255,18 @@ function groupCount<T>(items: T[], getKey: (item: T) => string) {
 }
 
 function KpiStat({
-  icon: Icon,
+  icon,
   label,
   value,
 }: {
-  icon: typeof FolderKanban;
+  icon: IconSvgElement;
   label: string;
   value: number;
 }) {
   return (
     <div className="flex items-center gap-3 sm:pl-4 first:sm:pl-0">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-        <Icon size={16} />
+        <HugeiconsIcon icon={icon} size={16} />
       </span>
       <div>
         <p className="text-xl font-medium tabular-nums text-foreground">

@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { AdminScopeSync } from "@/components/admin-scope-sync"
 import { ThemeProvider } from "@/components/theme-provider"
 import { QueryProvider } from "@/providers/query-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -24,7 +25,9 @@ async function getThemeOverrideStyle(): Promise<string> {
       .join(" ")
 
     if (!lightRules && !darkRules) return ""
-    return `:root { ${lightRules} } .dark { ${darkRules} }`
+    // Scoped to the admin panel only (see `.admin-scope` in globals.css) --
+    // the customizer at /admin/aparencia never touches the public site's tokens.
+    return `.admin-scope { ${lightRules} } .admin-scope.dark, .dark .admin-scope { ${darkRules} }`
   } catch {
     return ""
   }
@@ -67,6 +70,19 @@ export default async function RootLayout({
         {themeOverrideStyle ? (
           <style id="theme-overrides" dangerouslySetInnerHTML={{ __html: themeOverrideStyle }} />
         ) : null}
+        {/*
+          Blocking script (mirrors next-themes' own no-flash approach): puts
+          `admin-scope` on <html> before first paint so Radix portals
+          (Sheet/Dialog/Select/Toast, which mount straight under <body>)
+          inherit the neutral admin tokens instead of the brand ones. Client
+          navigations after hydration are handled by <AdminScopeSync>.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(location.pathname.startsWith('/admin'))document.documentElement.classList.add('admin-scope')}catch(e){}",
+          }}
+        />
       </head>
       <body className={`${inter.variable} ${jetBrainsMono.variable} ${bricolage.variable}`}>
         <ThemeProvider
@@ -76,8 +92,9 @@ export default async function RootLayout({
           disableTransitionOnChange={false}
         >
           <QueryProvider>
+            <AdminScopeSync />
             {children}
-            <Toaster richColors closeButton position="top-right" />
+            <Toaster richColors closeButton position="bottom-right" />
           </QueryProvider>
         </ThemeProvider>
         <Analytics />

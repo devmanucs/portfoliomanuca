@@ -5,6 +5,7 @@ import { FormFields } from "@/components/shared/form-fields";
 import { Button } from "@/components/ui/button";
 import { api } from "@/core/api/axios-instance";
 import { useFetch } from "@/hooks/use-crud";
+import { triggerRevalidate } from "@/lib/revalidate-client";
 import type { IProfile } from "@portfoliomanuca/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -71,6 +72,10 @@ export default function AdminProfilePage() {
         showToast: false,
         operation: "atualizar",
       });
+      // Awaited so the landing page's cache is already purged by the time
+      // the success toast shows -- otherwise a fast reload could still race
+      // the revalidation and briefly show stale data.
+      await triggerRevalidate(["profile"]);
       return data;
     },
     onSuccess: () => {
@@ -96,32 +101,42 @@ export default function AdminProfilePage() {
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : (
         <FormProvider {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="max-w-2xl space-y-4 rounded-xl border border-border bg-card p-6"
-          >
-            <FormFields.Input<ProfileForm> name="fullName" label="Nome completo" />
-            <FormFields.Input<ProfileForm> name="headline" label="Headline" />
-            <FormFields.Textarea<ProfileForm> name="bio" label="Bio" rows={4} />
-            <FormFields.Textarea<ProfileForm>
-              name="resumeSummary"
-              label="Resumo do currículo"
-              rows={3}
-            />
-            <div className="grid gap-4 md:grid-cols-2">
-              <FormFields.Input<ProfileForm> name="email" label="Email" type="email" />
-              <FormFields.Input<ProfileForm> name="phone" label="Telefone" />
-              <FormFields.Input<ProfileForm> name="location" label="Localização" />
-              <FormFields.Input<ProfileForm> name="avatarUrl" label="Avatar URL" />
-              <FormFields.Input<ProfileForm> name="linkedin" label="LinkedIn" />
-              <FormFields.Input<ProfileForm> name="github" label="GitHub" />
-              <FormFields.Input<ProfileForm> name="website" label="Website" />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-6 xl:grid-cols-3">
+              <FormFields.Section title="Identidade" className="xl:col-span-2">
+                <div className="grid gap-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormFields.Input<ProfileForm> name="fullName" label="Nome completo" />
+                    <FormFields.Input<ProfileForm> name="headline" label="Headline" />
+                  </div>
+                  <FormFields.Textarea<ProfileForm> name="bio" label="Bio" rows={4} />
+                  <FormFields.Textarea<ProfileForm>
+                    name="resumeSummary"
+                    label="Resumo do currículo"
+                    rows={3}
+                  />
+                </div>
+              </FormFields.Section>
+
+              <FormFields.Section title="Contato">
+                <div className="grid gap-4">
+                  <FormFields.Input<ProfileForm> name="email" label="Email" type="email" />
+                  <FormFields.Input<ProfileForm> name="phone" label="Telefone" />
+                  <FormFields.Input<ProfileForm> name="location" label="Localização" />
+                  <FormFields.Input<ProfileForm> name="avatarUrl" label="Avatar URL" />
+                </div>
+              </FormFields.Section>
             </div>
-            <Button
-              type="submit"
-              className="bg-sage text-background hover:bg-sage/90"
-              disabled={updateMutation.isPending}
-            >
+
+            <FormFields.Section title="Redes & Links">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <FormFields.Input<ProfileForm> name="linkedin" label="LinkedIn" />
+                <FormFields.Input<ProfileForm> name="github" label="GitHub" />
+                <FormFields.Input<ProfileForm> name="website" label="Website" />
+              </div>
+            </FormFields.Section>
+
+            <Button type="submit" disabled={updateMutation.isPending}>
               Salvar perfil
             </Button>
           </form>

@@ -11,13 +11,8 @@ import {
 } from "@/components/ui/frame";
 import { login } from "@/features/admin-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeft,
-  FileText,
-  FolderKanban,
-  LoaderCircle,
-  LockKeyhole,
-} from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft02Icon, File02Icon, Folder02Icon, Loading03Icon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
@@ -33,12 +28,12 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 const benefits = [
   {
-    icon: FolderKanban,
+    icon: Folder02Icon,
     title: "Projetos sempre atuais",
     description: "Edite cases, experiências e skills sem alterar o código.",
   },
   {
-    icon: FileText,
+    icon: File02Icon,
     title: "Currículo conectado",
     description: "O PDF usa a mesma fonte de dados do seu portfólio.",
   },
@@ -71,7 +66,7 @@ export default function AdminLoginPageClient() {
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] flex-col sm:min-h-[calc(100vh-4rem)]">
         <Button asChild variant="ghost" className="mb-6 w-fit">
           <Link href="/">
-            <ArrowLeft data-icon="inline-start" />
+            <HugeiconsIcon icon={ArrowLeft02Icon} data-icon="inline-start" />
             Voltar ao portfólio
           </Link>
         </Button>
@@ -86,10 +81,6 @@ export default function AdminLoginPageClient() {
                 <h1 className="max-w-md text-3xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl">
                   Meu portfólio, organizado em um só lugar.
                 </h1>
-                <p className="mt-5 max-w-md text-sm leading-6 text-body">
-                  Atualizo aqui meus trabalhos, gero o currículo sem duplicar
-                  informações, altero diretamente no cadastro dinâmico o meu portfólio.
-                </p>
               </div>
             </FramePanel>
 
@@ -122,7 +113,7 @@ export default function AdminLoginPageClient() {
                       disabled={form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                          <LoaderCircle
+                          <HugeiconsIcon icon={Loading03Icon}
                             data-icon="inline-start"
                             className="animate-spin"
                           />
