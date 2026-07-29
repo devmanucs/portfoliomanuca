@@ -3,20 +3,29 @@
 import * as React from "react";
 import { EmptyState } from "@/components/ds/empty-state";
 import { PageHeader } from "@/components/ds/page-header";
+import { AdminFormSheet } from "@/components/shared/admin-form-sheet";
 import { FormFields } from "@/components/shared/form-fields";
+import { ImageUploadField } from "@/components/shared/image-upload-field";
+import { MediaListField } from "@/components/shared/media-list-field";
+import { TablePagination } from "@/components/shared/table-pagination";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Frame, FrameDescription, FrameHeader, FramePanel, FrameTitle } from "@/components/ui/frame";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useCreate, useDelete, useFetch, useUpdate } from "@/hooks/use-crud";
 import { useModal } from "@/hooks/use-modal";
+import { usePagination } from "@/hooks/use-pagination";
 import type { IProject, ProjectFocus } from "@portfoliomanuca/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, PencilEdit02Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -33,7 +42,7 @@ const projectSchema = z.object({
   result: z.string().min(1),
   myRole: z.string().min(1),
   coverImage: z.string().min(1),
-  gallery: z.string().optional(),
+  gallery: z.array(z.object({ url: z.string().min(1, "Informe a URL") })).optional(),
   featured: z.boolean().optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
   includeInResume: z.boolean().optional(),
@@ -66,7 +75,7 @@ function toFormValues(project?: IProject): ProjectForm {
     result: project?.result ?? "",
     myRole: project?.myRole ?? "",
     coverImage: project?.coverImage ?? "",
-    gallery: project?.gallery?.join("\n") ?? "",
+    gallery: project?.gallery?.map((url) => ({ url })) ?? [],
     featured: project?.featured ?? false,
     status: project?.status ?? "PUBLISHED",
     includeInResume: project?.includeInResume ?? false,
@@ -77,7 +86,7 @@ function toPayload(values: ProjectForm) {
   return {
     ...values,
     process: values.process.split("\n").filter(Boolean),
-    gallery: values.gallery?.split("\n").filter(Boolean) ?? [],
+    gallery: values.gallery?.map((item) => item.url).filter(Boolean) ?? [],
     focus: values.focus as ProjectFocus,
   };
 }
@@ -91,6 +100,8 @@ export default function AdminProjectsPage() {
     route: "/projects/admin/all",
   });
 
+  const { pageItems, page, pageCount, pageSize, setPage, setPageSize, total } = usePagination(projects);
+
   const form = useForm<ProjectForm>({
     resolver: zodResolver(projectSchema),
     defaultValues: toFormValues(),
@@ -100,6 +111,7 @@ export default function AdminProjectsPage() {
     route: "/projects",
     mutationKey: ["create-project"],
     queryInvalidationKeys: ["projects"],
+    revalidateTags: ["projects"],
     onSuccess: () => modal.onClose(),
   });
 
@@ -107,6 +119,7 @@ export default function AdminProjectsPage() {
     route: "/projects",
     mutationKey: ["update-project"],
     queryInvalidationKeys: ["projects"],
+    revalidateTags: ["projects"],
     onSuccess: () => modal.onClose(),
   });
 
@@ -114,6 +127,7 @@ export default function AdminProjectsPage() {
     route: "/projects",
     mutationKey: ["delete-project"],
     queryInvalidationKeys: ["projects"],
+    revalidateTags: ["projects"],
   });
 
   function openCreate() {
@@ -137,6 +151,8 @@ export default function AdminProjectsPage() {
     createMutation.mutate({ formData: payload });
   }
 
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -144,134 +160,144 @@ export default function AdminProjectsPage() {
         title="Projetos"
         description="Gerencie cases publicados no portfólio."
         actions={
-          <Button onClick={openCreate} className="bg-sage text-background hover:bg-sage/90">
-            <Plus size={16} />
+          <Button onClick={openCreate}>
+            <HugeiconsIcon icon={PlusSignIcon} size={16} />
             Novo projeto
           </Button>
         }
       />
 
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando...</p>
-      ) : projects.length === 0 ? (
-        <EmptyState
-          title="Nenhum projeto"
-          description="Crie o primeiro projeto ou publique via seed da API."
-        />
-      ) : (
-        <div className="space-y-3">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
-            >
-              <div>
-                <p className="font-medium">{project.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  {project.category} · {project.status}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => openEdit(project)}>
-                  <Pencil size={14} />
-                  Editar
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-destructive"
-                  onClick={() => deleteMutation.mutate({ id: project.id })}
-                >
-                  <Trash2 size={14} />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <Frame>
+        <FrameHeader>
+          <FrameTitle>Projetos cadastrados</FrameTitle>
+          <FrameDescription>{projects.length} cases publicados ou em rascunho.</FrameDescription>
+        </FrameHeader>
+        <FramePanel className="pt-0">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Carregando...</p>
+          ) : projects.length === 0 ? (
+            <EmptyState
+              title="Nenhum projeto"
+              description="Crie o primeiro projeto ou publique via seed da API."
+            />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Título</TableHead>
+                  <TableHead>Categoria</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageItems.map((project) => (
+                  <TableRow key={project.id}>
+                    <TableCell className="max-w-64 truncate font-medium">
+                      {project.title}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{project.category}</TableCell>
+                    <TableCell>
+                      <Badge variant={project.status === "PUBLISHED" ? "secondary" : "outline"}>
+                        {project.status === "PUBLISHED" ? "Publicado" : "Rascunho"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon-sm" onClick={() => openEdit(project)}>
+                          <HugeiconsIcon icon={PencilEdit02Icon} size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-destructive"
+                          onClick={() => deleteMutation.mutate({ id: project.id })}
+                        >
+                          <HugeiconsIcon icon={Delete02Icon} size={14} />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          <TablePagination
+            page={page}
+            pageCount={pageCount}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
+        </FramePanel>
+      </Frame>
 
-      <Dialog open={modal.open} onOpenChange={modal.onOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? "Editar projeto" : "Novo projeto"}
-            </DialogTitle>
-          </DialogHeader>
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <FormProvider {...form}>
+        <AdminFormSheet
+          open={modal.open}
+          onOpenChange={modal.onOpenChange}
+          title={editing ? "Editar projeto" : "Novo projeto"}
+          description="Case exibido na listagem e na página de detalhe do portfólio."
+          onSubmit={form.handleSubmit(onSubmit)}
+          isSubmitting={isSaving}
+          className="sm:max-w-2xl"
+        >
+          <FormFields.Section title="Básico">
+            <div className="grid gap-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <FormFields.Input<ProjectForm> name="title" label="Título" />
                 <FormFields.Input<ProjectForm> name="slug" label="Slug" />
                 <FormFields.Input<ProjectForm> name="category" label="Categoria" />
-                <FormFields.Select<ProjectForm>
-                  name="focus"
-                  label="Foco"
-                  options={focusOptions}
-                />
+                <FormFields.Select<ProjectForm> name="focus" label="Foco" options={focusOptions} />
                 <FormFields.Select<ProjectForm>
                   name="status"
                   label="Status"
                   options={statusOptions}
                 />
-                <FormFields.Input<ProjectForm>
-                  name="coverImage"
-                  label="Imagem de capa"
-                />
               </div>
-              <FormFields.Textarea<ProjectForm>
-                name="description"
-                label="Descrição"
-                rows={3}
+              <ImageUploadField<ProjectForm>
+                name="coverImage"
+                label="Imagem de capa"
+                description="Esta é a imagem exibida no card da listagem de projetos (a primeira que aparece na home)."
               />
-              <FormFields.Textarea<ProjectForm>
-                name="context"
-                label="Contexto"
-                rows={2}
-              />
-              <FormFields.Textarea<ProjectForm>
-                name="problem"
-                label="Problema"
-                rows={2}
-              />
+            </div>
+          </FormFields.Section>
+
+          <FormFields.Section title="Conteúdo do case">
+            <div className="grid gap-4">
+              <FormFields.Textarea<ProjectForm> name="description" label="Descrição" rows={3} />
+              <FormFields.Textarea<ProjectForm> name="impact" label="Impacto" rows={2} />
+              <FormFields.Textarea<ProjectForm> name="context" label="Contexto" rows={2} />
+              <FormFields.Textarea<ProjectForm> name="problem" label="Problema" rows={2} />
               <FormFields.Textarea<ProjectForm>
                 name="process"
                 label="Processo (uma linha por item)"
                 rows={4}
               />
-              <FormFields.Textarea<ProjectForm>
-                name="result"
-                label="Resultado"
-                rows={2}
-              />
-              <FormFields.Textarea<ProjectForm>
-                name="myRole"
-                label="Meu papel"
-                rows={2}
-              />
-              <FormFields.Textarea<ProjectForm>
+              <FormFields.Textarea<ProjectForm> name="result" label="Resultado" rows={2} />
+              <FormFields.Textarea<ProjectForm> name="myRole" label="Meu papel" rows={2} />
+            </div>
+          </FormFields.Section>
+
+          <FormFields.Section title="Galeria & Currículo">
+            <div className="grid gap-4">
+              <MediaListField<ProjectForm>
                 name="gallery"
-                label="Galeria (uma URL por linha)"
-                rows={3}
+                label="Galeria do case"
+                description="Aparecem na página de detalhe do projeto (não no card da listagem -- isso é a Imagem de capa, lá em Básico)."
               />
               <div className="flex gap-6">
-                <FormFields.Switch<ProjectForm>
-                  name="featured"
-                  label="Destaque"
-                />
+                <FormFields.Switch<ProjectForm> name="featured" label="Destacar projeto (selo especial na listagem)" />
                 <FormFields.Switch<ProjectForm>
                   name="includeInResume"
                   label="Incluir no currículo"
                 />
               </div>
-              <DialogFooter>
-                <Button type="submit" className="bg-sage text-background hover:bg-sage/90">
-                  Salvar
-                </Button>
-              </DialogFooter>
-            </form>
-          </FormProvider>
-        </DialogContent>
-      </Dialog>
+            </div>
+          </FormFields.Section>
+        </AdminFormSheet>
+      </FormProvider>
     </div>
   );
 }

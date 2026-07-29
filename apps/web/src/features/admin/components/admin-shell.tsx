@@ -1,34 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { logout } from "@/features/admin-auth";
 import { cn } from "@/lib/utils";
 import {
-  Briefcase,
-  FileText,
-  FolderKanban,
-  LayoutDashboard,
-  LogOut,
-  Moon,
-  Palette,
-  Sparkles,
-  Sun,
-  User,
-} from "lucide-react";
-import { logout } from "@/features/admin-auth";
+  ArrowRightFromLineIcon,
+  Moon02Icon,
+  Sun03Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useTheme } from "next-themes";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/projetos", label: "Projetos", icon: FolderKanban },
-  { href: "/admin/experiencias", label: "Experiências", icon: Briefcase },
-  { href: "/admin/skills", label: "Skills", icon: Sparkles },
-  { href: "/admin/perfil", label: "Perfil", icon: User },
-  { href: "/admin/curriculo", label: "Currículo", icon: FileText },
-  { href: "/admin/aparencia", label: "Temas", icon: Palette },
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/projetos", label: "Projetos" },
+  { href: "/admin/experiencias", label: "Experiências" },
+  { href: "/admin/skills", label: "Skills" },
+  { href: "/admin/perfil", label: "Perfil" },
+  { href: "/admin/curriculo", label: "Currículo" },
+  { href: "/admin/aparencia", label: "Temas" },
 ];
 
 function isActiveHref(pathname: string, href: string) {
@@ -47,7 +41,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (isLogin) {
-    return <>{children}</>;
+    return <div className="admin-scope">{children}</div>;
   }
 
   async function handleLogout() {
@@ -62,9 +56,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className="admin-scope min-h-svh bg-background text-foreground">
       <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <nav
             aria-label="Navegação do admin"
             className="hidden items-center gap-1 md:flex"
@@ -77,7 +71,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
                     active
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
@@ -97,7 +91,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="Alternar tema"
             >
-              {mounted ? theme === "dark" ? <Sun size={16} /> : <Moon size={16} /> : null}
+              {mounted ? (
+                theme === "dark" ? (
+                  <HugeiconsIcon icon={Sun03Icon} size={16} />
+                ) : (
+                  <HugeiconsIcon icon={Moon02Icon} size={16} />
+                )
+              ) : null}
             </Button>
             <Button
               type="button"
@@ -106,8 +106,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               onClick={handleLogout}
               className="gap-1.5"
             >
-              Sair
-              <LogOut size={14} />
+              <HugeiconsIcon icon={ArrowRightFromLineIcon} size={14} />
             </Button>
           </div>
         </div>
@@ -124,7 +123,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                  "flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                   active
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
@@ -137,7 +136,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         {children}
       </main>
     </div>

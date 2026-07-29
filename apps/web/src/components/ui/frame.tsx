@@ -52,6 +52,7 @@ export function FrameTitle({
     <div
       className={cn("text-sm font-semibold text-foreground", className)}
       data-slot="frame-panel-title"
+      data-font-heading
       {...props}
     />
   );

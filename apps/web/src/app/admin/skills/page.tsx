@@ -3,20 +3,26 @@
 import * as React from "react";
 import { EmptyState } from "@/components/ds/empty-state";
 import { PageHeader } from "@/components/ds/page-header";
+import { AdminFormSheet } from "@/components/shared/admin-form-sheet";
 import { FormFields } from "@/components/shared/form-fields";
+import { TablePagination } from "@/components/shared/table-pagination";
 import { Button } from "@/components/ui/button";
+import { Frame, FrameDescription, FrameHeader, FramePanel, FrameTitle } from "@/components/ui/frame";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useCreate, useDelete, useFetch, useUpdate } from "@/hooks/use-crud";
 import { useModal } from "@/hooks/use-modal";
+import { usePagination } from "@/hooks/use-pagination";
 import type { ISkill } from "@portfoliomanuca/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, PencilEdit02Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -52,6 +58,8 @@ export default function AdminSkillsPage() {
     sortBy: "order",
   });
 
+  const { pageItems, page, pageCount, pageSize, setPage, setPageSize, total } = usePagination(skills);
+
   const form = useForm<SkillForm>({
     resolver: zodResolver(skillSchema),
     defaultValues: toFormValues(),
@@ -61,6 +69,7 @@ export default function AdminSkillsPage() {
     route: "/skills",
     mutationKey: ["create-skill"],
     queryInvalidationKeys: ["skills"],
+    revalidateTags: ["skills"],
     onSuccess: () => modal.onClose(),
   });
 
@@ -68,6 +77,7 @@ export default function AdminSkillsPage() {
     route: "/skills",
     mutationKey: ["update-skill"],
     queryInvalidationKeys: ["skills"],
+    revalidateTags: ["skills"],
     onSuccess: () => modal.onClose(),
   });
 
@@ -75,6 +85,7 @@ export default function AdminSkillsPage() {
     route: "/skills",
     mutationKey: ["delete-skill"],
     queryInvalidationKeys: ["skills"],
+    revalidateTags: ["skills"],
   });
 
   function openCreate() {
@@ -103,6 +114,8 @@ export default function AdminSkillsPage() {
     createMutation.mutate({ formData: payload });
   }
 
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -110,77 +123,90 @@ export default function AdminSkillsPage() {
         title="Skills"
         description="Tecnologias e habilidades exibidas no portfólio."
         actions={
-          <Button onClick={openCreate} className="bg-sage text-background hover:bg-sage/90">
-            <Plus size={16} />
+          <Button onClick={openCreate}>
+            <HugeiconsIcon icon={PlusSignIcon} size={16} />
             Nova skill
           </Button>
         }
       />
 
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando...</p>
-      ) : skills.length === 0 ? (
-        <EmptyState title="Nenhuma skill" description="Adicione skills ao portfólio." />
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {skills.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
-            >
-              <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-muted-foreground">{item.category}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => openEdit(item)}>
-                  <Pencil size={14} />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-destructive"
-                  onClick={() => deleteMutation.mutate({ id: item.id })}
-                >
-                  <Trash2 size={14} />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <Frame>
+        <FrameHeader>
+          <FrameTitle>Skills cadastradas</FrameTitle>
+          <FrameDescription>{skills.length} no total, ordenadas por prioridade.</FrameDescription>
+        </FrameHeader>
+        <FramePanel className="pt-0">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Carregando...</p>
+          ) : skills.length === 0 ? (
+            <EmptyState title="Nenhuma skill" description="Adicione skills ao portfólio." />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Categoria</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{item.category}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon-sm" onClick={() => openEdit(item)}>
+                          <HugeiconsIcon icon={PencilEdit02Icon} size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-destructive"
+                          onClick={() => deleteMutation.mutate({ id: item.id })}
+                        >
+                          <HugeiconsIcon icon={Delete02Icon} size={14} />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          <TablePagination
+            page={page}
+            pageCount={pageCount}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
+        </FramePanel>
+      </Frame>
 
-      <Dialog open={modal.open} onOpenChange={modal.onOpenChange}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editing ? "Editar skill" : "Nova skill"}</DialogTitle>
-          </DialogHeader>
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <FormProvider {...form}>
+        <AdminFormSheet
+          open={modal.open}
+          onOpenChange={modal.onOpenChange}
+          title={editing ? "Editar skill" : "Nova skill"}
+          description="Tecnologia ou habilidade exibida no portfólio."
+          onSubmit={form.handleSubmit(onSubmit)}
+          isSubmitting={isSaving}
+        >
+          <FormFields.Section title="Detalhes">
+            <div className="grid gap-4">
               <FormFields.Input<SkillForm> name="name" label="Nome" />
               <FormFields.Input<SkillForm> name="category" label="Categoria" />
-              <FormFields.Input<SkillForm>
-                name="iconKey"
-                label="Icon key (opcional)"
-              />
-              <FormFields.Input<SkillForm>
-                name="color"
-                label="Cor (hex)"
-              />
-              <FormFields.Input<SkillForm>
-                name="order"
-                label="Ordem"
-                type="number"
-              />
-              <DialogFooter>
-                <Button type="submit" className="bg-sage text-background hover:bg-sage/90">
-                  Salvar
-                </Button>
-              </DialogFooter>
-            </form>
-          </FormProvider>
-        </DialogContent>
-      </Dialog>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormFields.Input<SkillForm> name="iconKey" label="Icon key (opcional)" />
+                <FormFields.Input<SkillForm> name="color" label="Cor (hex)" />
+              </div>
+              <FormFields.Input<SkillForm> name="order" label="Ordem" type="number" />
+            </div>
+          </FormFields.Section>
+        </AdminFormSheet>
+      </FormProvider>
     </div>
   );
 }

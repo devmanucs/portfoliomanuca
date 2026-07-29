@@ -9,6 +9,7 @@ import {
 import { type AxiosRequestConfig } from "axios";
 import { api } from "@/core/api/axios-instance";
 import { ApiError } from "@/core/api/api-error";
+import { triggerRevalidate } from "@/lib/revalidate-client";
 
 export interface UseFetchResponse<T>
   extends UndefinedInitialDataOptions<T, Error, T, readonly unknown[]> {
@@ -27,6 +28,8 @@ interface UseCustomMutationsProps<T> {
   route: string;
   mutationKey: string[];
   queryInvalidationKeys?: string[];
+  /** Next.js cache tags to revalidate on the public site (see lib/api-server.ts). */
+  revalidateTags?: string[];
   onSuccess?: (data: T) => void;
   onError?: (error: ApiError) => void;
   config?: AxiosRequestConfig;
@@ -95,6 +98,7 @@ function handleToastError(error: ApiError, defaultMessage: string) {
 export function useCreate<T>({
   route,
   queryInvalidationKeys,
+  revalidateTags,
   onSuccess,
   onError,
   mutationKey,
@@ -109,6 +113,11 @@ export function useCreate<T>({
         operation: "criar",
         ...config,
       });
+      // Awaited here (not fire-and-forget in onSettled) so the public site's
+      // cache is already purged by the time the caller sees success --
+      // otherwise a fast reload of the landing page could still race the
+      // revalidation and briefly show stale data.
+      if (revalidateTags?.length) await triggerRevalidate(revalidateTags);
       return response.data;
     },
     onSuccess: (data: T) => {
@@ -136,6 +145,7 @@ export function useCreate<T>({
 export function useUpdate<T>({
   route,
   queryInvalidationKeys,
+  revalidateTags,
   mutationKey,
   onSuccess,
   onError,
@@ -151,6 +161,9 @@ export function useUpdate<T>({
         operation: "atualizar",
         ...config,
       });
+      // Awaited (see useCreate above) to close the race where a fast reload
+      // of the landing page could still show stale data.
+      if (revalidateTags?.length) await triggerRevalidate(revalidateTags);
       return response.data;
     },
     onSuccess: (data: T) => {
@@ -181,6 +194,7 @@ export function useUpdate<T>({
 export function useDelete<T>({
   route,
   queryInvalidationKeys,
+  revalidateTags,
   mutationKey,
   onSuccess,
   onError,
@@ -193,6 +207,9 @@ export function useDelete<T>({
         showToast: false,
         operation: "excluir",
       });
+      // Awaited (see useCreate above) to close the race where a fast reload
+      // of the landing page could still show stale data.
+      if (revalidateTags?.length) await triggerRevalidate(revalidateTags);
     },
     onSuccess: (data: unknown) => {
       if (onSuccess) {

@@ -3,22 +3,35 @@
 import * as React from "react";
 import { EmptyState } from "@/components/ds/empty-state";
 import { PageHeader } from "@/components/ds/page-header";
+import { AdminFormSheet } from "@/components/shared/admin-form-sheet";
 import { FormFields } from "@/components/shared/form-fields";
+import { TablePagination } from "@/components/shared/table-pagination";
 import { Button } from "@/components/ui/button";
+import { Frame, FrameDescription, FrameHeader, FramePanel, FrameTitle } from "@/components/ui/frame";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useCreate, useDelete, useFetch, useUpdate } from "@/hooks/use-crud";
 import { useModal } from "@/hooks/use-modal";
+import { usePagination } from "@/hooks/use-pagination";
 import type { EmploymentType, IExperience } from "@portfoliomanuca/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, PencilEdit02Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
+
+const employmentLabels: Record<EmploymentType, string> = {
+  FULL_TIME: "Tempo integral",
+  PART_TIME: "Meio período",
+  FREELANCE: "Freelance",
+  INTERNSHIP: "Estágio",
+};
 
 const experienceSchema = z.object({
   company: z.string().min(1),
@@ -72,6 +85,8 @@ export default function AdminExperiencesPage() {
     sortBy: "order",
   });
 
+  const { pageItems, page, pageCount, pageSize, setPage, setPageSize, total } = usePagination(experiences);
+
   const form = useForm<ExperienceForm>({
     resolver: zodResolver(experienceSchema),
     defaultValues: toFormValues(),
@@ -81,6 +96,7 @@ export default function AdminExperiencesPage() {
     route: "/experiences",
     mutationKey: ["create-experience"],
     queryInvalidationKeys: ["experiences"],
+    revalidateTags: ["experiences"],
     onSuccess: () => modal.onClose(),
   });
 
@@ -88,6 +104,7 @@ export default function AdminExperiencesPage() {
     route: "/experiences",
     mutationKey: ["update-experience"],
     queryInvalidationKeys: ["experiences"],
+    revalidateTags: ["experiences"],
     onSuccess: () => modal.onClose(),
   });
 
@@ -95,6 +112,7 @@ export default function AdminExperiencesPage() {
     route: "/experiences",
     mutationKey: ["delete-experience"],
     queryInvalidationKeys: ["experiences"],
+    revalidateTags: ["experiences"],
   });
 
   function openCreate() {
@@ -124,6 +142,8 @@ export default function AdminExperiencesPage() {
     createMutation.mutate({ formData: payload });
   }
 
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -131,87 +151,113 @@ export default function AdminExperiencesPage() {
         title="Experiências"
         description="Histórico profissional exibido no portfólio e currículo."
         actions={
-          <Button onClick={openCreate} className="bg-sage text-background hover:bg-sage/90">
-            <Plus size={16} />
+          <Button onClick={openCreate}>
+            <HugeiconsIcon icon={PlusSignIcon} size={16} />
             Nova experiência
           </Button>
         }
       />
 
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando...</p>
-      ) : experiences.length === 0 ? (
-        <EmptyState title="Nenhuma experiência" description="Adicione a primeira experiência." />
-      ) : (
-        <div className="space-y-3">
-          {experiences.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
-            >
-              <div>
-                <p className="font-medium">{item.role}</p>
-                <p className="text-sm text-muted-foreground">
-                  {item.company} · {item.periodLabel ?? "—"}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => openEdit(item)}>
-                  <Pencil size={14} />
-                  Editar
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-destructive"
-                  onClick={() => deleteMutation.mutate({ id: item.id })}
-                >
-                  <Trash2 size={14} />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <Frame>
+        <FrameHeader>
+          <FrameTitle>Experiências cadastradas</FrameTitle>
+          <FrameDescription>{experiences.length} registros no histórico.</FrameDescription>
+        </FrameHeader>
+        <FramePanel className="pt-0">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Carregando...</p>
+          ) : experiences.length === 0 ? (
+            <EmptyState title="Nenhuma experiência" description="Adicione a primeira experiência." />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Cargo</TableHead>
+                  <TableHead>Empresa</TableHead>
+                  <TableHead>Período</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.role}</TableCell>
+                    <TableCell className="text-muted-foreground">{item.company}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {item.periodLabel ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {employmentLabels[item.employmentType]}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon-sm" onClick={() => openEdit(item)}>
+                          <HugeiconsIcon icon={PencilEdit02Icon} size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-destructive"
+                          onClick={() => deleteMutation.mutate({ id: item.id })}
+                        >
+                          <HugeiconsIcon icon={Delete02Icon} size={14} />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          <TablePagination
+            page={page}
+            pageCount={pageCount}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
+        </FramePanel>
+      </Frame>
 
-      <Dialog open={modal.open} onOpenChange={modal.onOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? "Editar experiência" : "Nova experiência"}
-            </DialogTitle>
-          </DialogHeader>
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <FormProvider {...form}>
+        <AdminFormSheet
+          open={modal.open}
+          onOpenChange={modal.onOpenChange}
+          title={editing ? "Editar experiência" : "Nova experiência"}
+          description="Histórico profissional exibido no portfólio e no currículo."
+          onSubmit={form.handleSubmit(onSubmit)}
+          isSubmitting={isSaving}
+        >
+          <FormFields.Section title="Cargo">
+            <div className="grid gap-4">
               <FormFields.Input<ExperienceForm> name="role" label="Cargo" />
               <FormFields.Input<ExperienceForm> name="company" label="Empresa" />
-              <FormFields.Input<ExperienceForm> name="location" label="Local" />
-              <FormFields.Select<ExperienceForm>
-                name="employmentType"
-                label="Tipo"
-                options={employmentOptions}
-              />
-              <FormFields.Input<ExperienceForm>
-                name="periodLabel"
-                label="Período (rótulo)"
-              />
-              <div className="grid gap-4 md:grid-cols-2">
-                <FormFields.Input<ExperienceForm>
-                  name="startDate"
-                  label="Início"
-                  type="date"
-                />
-                <FormFields.Input<ExperienceForm>
-                  name="endDate"
-                  label="Fim"
-                  type="date"
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormFields.Input<ExperienceForm> name="location" label="Local" />
+                <FormFields.Select<ExperienceForm>
+                  name="employmentType"
+                  label="Tipo"
+                  options={employmentOptions}
                 />
               </div>
-              <FormFields.Textarea<ExperienceForm>
-                name="description"
-                label="Descrição"
-                rows={3}
-              />
+            </div>
+          </FormFields.Section>
+
+          <FormFields.Section title="Período">
+            <div className="grid gap-4">
+              <FormFields.Input<ExperienceForm> name="periodLabel" label="Período (rótulo)" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormFields.Input<ExperienceForm> name="startDate" label="Início" type="date" />
+                <FormFields.Input<ExperienceForm> name="endDate" label="Fim" type="date" />
+              </div>
+            </div>
+          </FormFields.Section>
+
+          <FormFields.Section title="Descrição">
+            <div className="grid gap-4">
+              <FormFields.Textarea<ExperienceForm> name="description" label="Descrição" rows={3} />
               <FormFields.Textarea<ExperienceForm>
                 name="highlights"
                 label="Destaques (uma linha por item)"
@@ -221,15 +267,10 @@ export default function AdminExperiencesPage() {
                 name="includeInResume"
                 label="Incluir no currículo"
               />
-              <DialogFooter>
-                <Button type="submit" className="bg-sage text-background hover:bg-sage/90">
-                  Salvar
-                </Button>
-              </DialogFooter>
-            </form>
-          </FormProvider>
-        </DialogContent>
-      </Dialog>
+            </div>
+          </FormFields.Section>
+        </AdminFormSheet>
+      </FormProvider>
     </div>
   );
 }

@@ -2,12 +2,14 @@
 
 import { PageHeader } from "@/components/ds/page-header";
 import { Button } from "@/components/ui/button";
+import { Frame, FrameHeader, FramePanel, FrameTitle } from "@/components/ui/frame";
 import { Switch } from "@/components/ui/switch";
 import { API_BASE_URL, api } from "@/core/api/axios-instance";
 import { ResumePreview } from "@/features/resume-builder";
 import { useFetch, useUpdate } from "@/hooks/use-crud";
 import type { IExperience, IProject, IResume } from "@portfoliomanuca/types";
-import { Download } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Download04Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 
 export default function AdminResumePage() {
@@ -65,11 +67,8 @@ export default function AdminResumePage() {
         title="Currículo"
         description="Escolha o que entra no PDF e visualize o resultado."
         actions={
-          <Button
-            onClick={downloadPdf}
-            className="bg-sage text-background hover:bg-sage/90"
-          >
-            <Download size={16} />
+          <Button onClick={downloadPdf}>
+            <HugeiconsIcon icon={Download04Icon} size={16} />
             Baixar PDF
           </Button>
         }
@@ -77,11 +76,11 @@ export default function AdminResumePage() {
 
       <div className="grid gap-8 xl:grid-cols-2">
         <div className="space-y-6">
-          <section className="rounded-xl border border-border bg-card p-5">
-            <h2 className="mb-4 text-sm font-medium text-foreground">
-              Experiências no currículo
-            </h2>
-            <div className="space-y-3">
+          <Frame>
+            <FrameHeader>
+              <FrameTitle>Experiências no currículo</FrameTitle>
+            </FrameHeader>
+            <FramePanel className="space-y-3 pt-0">
               {experiences.map((item) => (
                 <label
                   key={item.id}
@@ -102,14 +101,14 @@ export default function AdminResumePage() {
                   />
                 </label>
               ))}
-            </div>
-          </section>
+            </FramePanel>
+          </Frame>
 
-          <section className="rounded-xl border border-border bg-card p-5">
-            <h2 className="mb-4 text-sm font-medium text-foreground">
-              Projetos no currículo
-            </h2>
-            <div className="space-y-3">
+          <Frame>
+            <FrameHeader>
+              <FrameTitle>Projetos no currículo</FrameTitle>
+            </FrameHeader>
+            <FramePanel className="space-y-3 pt-0">
               {projects.map((item) => (
                 <label
                   key={item.id}
@@ -130,22 +129,26 @@ export default function AdminResumePage() {
                   />
                 </label>
               ))}
-            </div>
-          </section>
+            </FramePanel>
+          </Frame>
         </div>
 
-        <section>
-          <h2 className="mb-4 text-sm font-medium text-foreground">Preview</h2>
-          {resumeLoading ? (
-            <p className="text-sm text-muted-foreground">Carregando preview...</p>
-          ) : resume ? (
-            <ResumePreview resume={resume} />
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Preview indisponível. Verifique se a API está rodando.
-            </p>
-          )}
-        </section>
+        <Frame>
+          <FrameHeader>
+            <FrameTitle>Preview</FrameTitle>
+          </FrameHeader>
+          <FramePanel className="pt-0">
+            {resumeLoading ? (
+              <p className="text-sm text-muted-foreground">Carregando preview...</p>
+            ) : resume ? (
+              <ResumePreview resume={resume} />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Preview indisponível. Verifique se a API está rodando.
+              </p>
+            )}
+          </FramePanel>
+        </Frame>
       </div>
     </div>
   );
