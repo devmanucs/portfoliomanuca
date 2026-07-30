@@ -1,0 +1,51 @@
+import type { ProjectFocus, ProjectStatus } from '@portfoliomanuca/types';
+export declare class CreateProjectDto {
+    slug: string;
+    title: string;
+    category: string;
+    focus: ProjectFocus;
+    description: string;
+    impact: string;
+    context: string;
+    problem: string;
+    process: string[];
+    result: string;
+    myRole: string;
+    designDecisions?: string[];
+    technicalHighlights?: string[];
+    coverImage: string;
+    gallery: string[];
+    liveUrl?: string;
+    githubUrl?: string;
+    figmaUrl?: string;
+    featured?: boolean;
+    order?: number;
+    status?: ProjectStatus;
+    includeInResume?: boolean;
+    skillNames?: string[];
+}
+export declare class UpdateProjectDto {
+    slug?: string;
+    title?: string;
+    category?: string;
+    focus?: ProjectFocus;
+    description?: string;
+    impact?: string;
+    context?: string;
+    problem?: string;
+    process?: string[];
+    result?: string;
+    myRole?: string;
+    designDecisions?: string[];
+    technicalHighlights?: string[];
+    coverImage?: string;
+    gallery?: string[];
+    liveUrl?: string | null;
+    githubUrl?: string | null;
+    figmaUrl?: string | null;
+    featured?: boolean;
+    order?: number;
+    status?: ProjectStatus;
+    includeInResume?: boolean;
+    skillNames?: string[];
+}
