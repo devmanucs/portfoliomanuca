@@ -1,0 +1,17 @@
+---
+globs: "fbi_front/src/**/*.tsx"
+alwaysApply: false
+---
+
+# Componentes e design system
+
+- Prioridade de componentes: primeiro `@/components/ui`, depois `@/components/shared`, depois componentes locais da feature.
+- Para primitives e controles, use shadcn/base-ui ja configurados em @fbi_front/components.json e exemplos em @fbi_front/src/components/ui/button.tsx, @fbi_front/src/components/ui/sheet.tsx e @fbi_front/src/components/ui/form.tsx.
+- Para campos de formulario comuns, use @fbi_front/src/components/shared/form-fields.tsx antes de criar wrappers locais.
+- Componentes especificos da feature devem ficar perto do uso, em `src/features/<feature>/components/`, com arquivo em kebab-case e named export.
+- Evite default export em componentes de feature; siga `export const NomeComponente = ...`, como @fbi_front/src/features/clientes/components/table.tsx.
+- Use `cn()` de @fbi_front/src/lib/utils.ts para combinar classes condicionais e variantes.
+- Use tokens semanticos do Tailwind (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`, etc.). Nao use cores hardcoded em JSX (`#...`, `rgb(...)`, `text-green-600`) em codigo novo.
+- Para variantes reutilizaveis, siga `class-variance-authority` como @fbi_front/src/components/ui/button.tsx em vez de espalhar condicionais longas de classe.
+- Use icones de `lucide-react` em botoes quando existir um icone adequado, mantendo `data-icon="inline-start"` ou `data-icon="inline-center"` como nos exemplos de cadastro.
+- Nao duplique componentes globais de UI dentro da feature. Se o componente e uma primitive generica, estenda o componente existente em `src/components/ui`.

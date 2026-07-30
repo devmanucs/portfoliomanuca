@@ -1,0 +1,16 @@
+---
+globs: "fbi_front/src/app/**/*.tsx,fbi_front/src/features/**/*.tsx,fbi_front/src/components/**/*.tsx"
+alwaysApply: false
+---
+
+# Performance e Next.js
+
+- Em App Router, mantenha `page.tsx` e layouts como Server Components quando possivel. Use `"use client"` apenas nos componentes que precisam de hooks, eventos, browser APIs ou React Query.
+- Prefira colocar interatividade em componentes filhos de feature, mantendo a rota fina. Exemplo: @fbi_front/src/app/(root)/cadastros/clientes/page.tsx renderiza @fbi_front/src/features/clientes/feature.tsx.
+- Use `Suspense` e loading local quando a rota ja segue esse padrao, como em `clientes`.
+- Use `next/image` para imagens renderizadas na UI quando houver arquivo ou URL de imagem. Exemplos existentes: @fbi_front/src/components/ui/image-upload.tsx e @fbi_front/src/components/layout/team-switcher.tsx.
+- Use `next/dynamic` com `ssr: false` apenas para bibliotecas dependentes de browser/window, como mapas Leaflet. Exemplos: @fbi_front/src/components/ui/map.tsx e @fbi_front/src/features/mapa/components/map-demo.tsx.
+- Evite `useEffect` para derivar estado que pode sair de props, memo ou handlers. Quando precisar sincronizar form ao abrir modal, siga o padrao existente e mantenha dependencias completas.
+- Use `useMemo` para columns, lookups normalizados, listas derivadas e payloads visuais caros; nao memorize valores triviais.
+- Evite carregar listas grandes para filtrar no cliente. Para autocomplete/search, prefira busca no backend com limite e hidrate opcoes selecionadas quando necessario.
+- Nao mova componentes inteiros para Client Component por conveniencia; isole apenas a parte interativa.

@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model SiteTheme {
+  id        String   @id @default(cuid())
+  tokens    Json     @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id            String  @id @default(cuid())
+  fullName      String
+  headline      String
+  bio           String  @db.Text
+  email         String
+  phone         String?
+  location      String?
+  linkedin      String?
+  github        String?
+  website       String?
+  avatarUrl     String?
+  resumeSummary String? @db.Text
+}
+
+enum ProjectFocus {
+  DESIGN
+  DEVELOPMENT
+  HYBRID
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+  INTERNSHIP
+}
+
+model Project {
+  id                  String         @id @default(cuid())
+  slug                String         @unique
+  title               String
+  category            String
+  focus               ProjectFocus
+  description         String         @db.Text
+  impact              String         @db.Text
+  context             String         @db.Text
+  problem             String         @db.Text
+  process             String[]
+  result              String         @db.Text
+  myRole              String
+  designDecisions     String[]
+  technicalHighlights String[]
+  coverImage          String
+  gallery             String[]
+  liveUrl             String?
+  githubUrl           String?
+  figmaUrl            String?
+  featured            Boolean        @default(false)
+  order               Int            @default(0)
+  status              ProjectStatus  @default(DRAFT)
+  includeInResume     Boolean        @default(true)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  skills              ProjectSkill[]
+}
+
+model Experience {
+  id              String           @id @default(cuid())
+  company         String
+  role            String
+  location        String?
+  employmentType  EmploymentType   @default(FULL_TIME)
+  periodLabel     String?
+  startDate       DateTime
+  endDate         DateTime?
+  description     String           @db.Text
+  highlights      String[]
+  order           Int              @default(0)
+  includeInResume Boolean          @default(true)
+  skills          ExperienceSkill[]
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  degree      String
+  institution String
+  periodLabel String?
+  startDate   DateTime?
+  endDate     DateTime?
+  order       Int       @default(0)
+}
+
+model Interest {
+  id    String @id @default(cuid())
+  name  String
+  order Int    @default(0)
+}
+
+model Skill {
+  id         String            @id @default(cuid())
+  name       String            @unique
+  category   String
+  level      Int?
+  iconKey    String?
+  color      String?
+  order      Int               @default(0)
+  projects   ProjectSkill[]
+  experiences ExperienceSkill[]
+}
+
+model ProjectSkill {
+  projectId String
+  skillId   String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, skillId])
+}
+
+model ExperienceSkill {
+  experienceId String
+  skillId      String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  skill        Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([experienceId, skillId])
+}
